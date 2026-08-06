@@ -75,3 +75,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    # Inter is bundled rather than fetched at runtime. google_fonts resolves
+    # these by filename, so the app never needs the network for its type —
+    # required for the offline-first brief (report §5).
+    - assets/google_fonts/

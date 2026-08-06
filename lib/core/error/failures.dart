@@ -11,8 +11,9 @@ class NetworkFailure extends Failure {
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure(
-      [super.message = 'Something went wrong. Please try again.']);
+  const ServerFailure([
+    super.message = 'Something went wrong. Please try again.',
+  ]);
 }
 
 class AuthFailure extends Failure {
@@ -23,8 +24,9 @@ class AuthFailure extends Failure {
 /// or an unsupported platform) — distinct from the user failing the prompt, so
 /// the UI can hide the Face ID affordance rather than show an error.
 class BiometricUnavailableFailure extends Failure {
-  const BiometricUnavailableFailure(
-      [super.message = 'Biometric sign-in is not available on this device.']);
+  const BiometricUnavailableFailure([
+    super.message = 'Biometric sign-in is not available on this device.',
+  ]);
 }
 
 class CacheFailure extends Failure {

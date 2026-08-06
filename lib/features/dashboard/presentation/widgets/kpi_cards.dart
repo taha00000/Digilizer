@@ -26,7 +26,10 @@ class KpiCardRow extends StatelessWidget {
               value: '${summary.dayToDatePct}%',
               delta: '▲ above target',
               deltaColor: t.good,
-              trailing: _Sparkline(values: summary.dayToDateSpark),
+              trailing: _Sparkline(
+                values: summary.dayToDateSpark,
+                height: _KpiCard.trailingHeight,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -80,6 +83,9 @@ class _KpiCard extends StatelessWidget {
   final Color deltaColor;
   final Widget trailing;
 
+  /// Height reserved for the inline micro-viz under each KPI value.
+  static const double trailingHeight = 40;
+
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
@@ -114,7 +120,7 @@ class _KpiCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          SizedBox(height: 40, child: trailing),
+          SizedBox(height: trailingHeight, child: trailing),
         ],
       ),
     );
@@ -122,34 +128,34 @@ class _KpiCard extends StatelessWidget {
 }
 
 /// Five small bars; the last one is highlighted as the current period.
+///
+/// Heights are computed from [height] rather than a LayoutBuilder on purpose:
+/// this sits inside an [IntrinsicHeight], which cannot measure through a
+/// LayoutBuilder and throws during layout if one is present.
 class _Sparkline extends StatelessWidget {
-  const _Sparkline({required this.values});
+  const _Sparkline({required this.values, required this.height});
 
   final List<double> values;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    return LayoutBuilder(
-      builder: (context, c) {
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            for (var i = 0; i < values.length; i++) ...[
-              if (i > 0) const SizedBox(width: 5),
-              Container(
-                width: 7,
-                height: (c.maxHeight * values[i].clamp(0.0, 1.0))
-                    .clamp(4.0, c.maxHeight),
-                decoration: BoxDecoration(
-                  color: i == values.length - 1 ? t.primary : t.primarySoft,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ],
-          ],
-        );
-      },
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        for (var i = 0; i < values.length; i++) ...[
+          if (i > 0) const SizedBox(width: 5),
+          Container(
+            width: 7,
+            height: (height * values[i].clamp(0.0, 1.0)).clamp(4.0, height),
+            decoration: BoxDecoration(
+              color: i == values.length - 1 ? t.primary : t.primarySoft,
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

@@ -21,6 +21,10 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await pumpApp(tester, const DashboardScreen(), theme: theme);
+    // The mock datasource resolves via Future.delayed. pumpAndSettle only
+    // waits on scheduled frames, not plain timers, so it would return while
+    // the screen is still in its loading state — advance past the delay first.
+    await tester.pump(const Duration(milliseconds: 700));
     await tester.pumpAndSettle();
   }
 

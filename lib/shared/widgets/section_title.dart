@@ -16,18 +16,24 @@ class SectionTitle extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 18, 0, 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: t.ink,
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: t.ink,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-          if (trailing != null) trailing!,
+          if (trailing != null) ...[
+            const SizedBox(width: 10),
+            trailing!,
+          ],
         ],
       ),
     );

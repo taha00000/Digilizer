@@ -6,7 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eway/core/services/biometric_service.dart';
 import 'package:eway/core/services/prefs.dart';
 import 'package:eway/core/services/token_store.dart';
+import 'package:eway/core/session/app_session.dart';
+import 'package:eway/core/session/session_controller.dart';
 import 'package:eway/core/theme/app_theme.dart';
+
+/// The demo session from the approved prototype.
+const demoSession = AppSession(
+  userId: 'demo-1',
+  displayName: 'Demo Support',
+  company: 'HILAL',
+  accountCode: '999903',
+);
 
 /// Biometric stub for widget tests — the real plugin has no implementation in
 /// the test binding.
@@ -39,6 +49,7 @@ Future<void> pumpApp(
   AppThemeId theme = AppThemeId.aurora,
   List<Override> overrides = const [],
   FakeBiometricService? biometrics,
+  AppSession? session,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -50,6 +61,10 @@ Future<void> pumpApp(
         biometricServiceProvider
             .overrideWithValue(biometrics ?? FakeBiometricService()),
         tokenStoreProvider.overrideWithValue(InMemoryTokenStore()),
+        if (session != null)
+          sessionControllerProvider.overrideWith(
+            (ref) => SessionController()..signIn(session),
+          ),
         ...overrides,
       ],
       child: MaterialApp(

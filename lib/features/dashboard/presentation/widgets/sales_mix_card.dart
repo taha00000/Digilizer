@@ -34,16 +34,20 @@ class _SalesMixCardState extends State<SalesMixCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Sales by type',
-                style: TextStyle(
-                  color: t.ink,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
+              Expanded(
+                child: Text(
+                  'Sales by type',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: t.ink,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
+              const SizedBox(width: 10),
               SegControl(
                 labels: const ['Donut', 'Bars', 'Share'],
                 selectedIndex: _view,

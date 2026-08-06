@@ -137,7 +137,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return ListView(
       controller: _scroll,
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(18, 6, 18, BottomTabBar.height + 32),
+      padding: const EdgeInsets.fromLTRB(18, 6, 18, BottomTabBar.height + 32),
       children: [
         PillRow(
           labels: DashboardPeriod.values.map((p) => p.label).toList(),

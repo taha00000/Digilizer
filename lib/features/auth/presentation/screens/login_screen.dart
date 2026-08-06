@@ -110,37 +110,44 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Column(
+                  // Wordmark at the top, sheet flush to the bottom — the
+                  // prototype's login layout.
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(height: 46),
-                    const Text(
-                      'DIGILYZR',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 4,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'eℓway · pharma SFA',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
-                    ),
-                    const SizedBox(height: 18),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        'Field intelligence for medical reps\n'
-                        '& management teams.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12.5,
-                          height: 1.5,
+                    const Column(
+                      children: [
+                        SizedBox(height: 46),
+                        Text(
+                          'DIGILYZR',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 4,
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 4),
+                        Text(
+                          'eℓway · pharma SFA',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                        SizedBox(height: 18),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 32),
+                          child: Text(
+                            'Field intelligence for medical reps\n'
+                            '& management teams.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12.5,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 34),
+                      ],
                     ),
-                    const SizedBox(height: 34),
                     _sheet(t, loading, showBiometrics),
                   ],
                 ),
@@ -219,33 +226,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           const SizedBox(height: 2),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap: () => setState(() => _remember = !_remember),
-                behavior: HitTestBehavior.opaque,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _remember
-                          ? Icons.check_box_rounded
-                          : Icons.check_box_outline_blank_rounded,
-                      size: 19,
-                      color: _remember ? t.primary : t.sub,
-                    ),
-                    const SizedBox(width: 7),
-                    Text(
-                      'Remember me',
-                      style: TextStyle(
-                        color: t.sub,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
+              Flexible(
+                child: GestureDetector(
+                  onTap: () => setState(() => _remember = !_remember),
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _remember
+                            ? Icons.check_box_rounded
+                            : Icons.check_box_outline_blank_rounded,
+                        size: 19,
+                        color: _remember ? t.primary : t.sub,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 7),
+                      Flexible(
+                        child: Text(
+                          'Remember me',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: t.sub,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+              const Spacer(),
               TextButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context)

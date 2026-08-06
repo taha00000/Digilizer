@@ -10,14 +10,8 @@ Reporting come later — see [HANDOFF.md](HANDOFF.md).
 
 ## Getting it running
 
-> **Run step 1 first.** This repo contains `lib/`, `test/` and `pubspec.yaml`
-> but no `ios/` or `android/` folders yet — they are machine-generated and were
-> never in the original scaffold. `flutter create` fills them in without
-> touching anything already here.
-
-```bash
-flutter create --platforms=ios,android --org com.digilyzr .
-```
+Verified on **Flutter 3.44.9 / Dart 3.12.2**. `ios/`, `android/` and `web/` are
+generated and committed, so this is a straight clone-and-run:
 
 ```bash
 flutter pub get
@@ -27,11 +21,11 @@ flutter pub get
 flutter run --dart-define=USE_MOCK=true
 ```
 
-No codegen step is needed yet — the models are hand-written on purpose so the
-app builds straight after `pub get`. `build_runner` is already in
-`dev_dependencies` for when Freezed/Retrofit/Drift come in.
+No codegen step is needed — the models are hand-written on purpose so the app
+builds straight after `pub get`. `build_runner` is already in `dev_dependencies`
+for when Freezed/Retrofit/Drift come in.
 
-To see it quickly without a simulator:
+To see it without a simulator:
 
 ```bash
 flutter run -d chrome --dart-define=USE_MOCK=true
@@ -44,6 +38,15 @@ datasource accepts anything and returns the demo session.
 
 ```bash
 flutter test
+```
+
+43 tests: unit, widget, and golden. `flutter analyze` is clean.
+
+Goldens live in `test/golden/images/` and cover login + dashboard in all three
+themes. After an intentional UI change, regenerate them:
+
+```bash
+flutter test --update-goldens
 ```
 
 ---
@@ -101,6 +104,13 @@ a `ThemeExtension`. Widgets read `context.tokens.primary` — **never** a
 hard-coded `Color`. That is what lets the app re-skin live from the profile
 sheet.
 
+**Inter is bundled, not fetched.** `assets/google_fonts/` holds the five
+weights the design uses, and `main()` sets
+`GoogleFonts.config.allowRuntimeFetching = false`. Left on the default,
+google_fonts downloads Inter over HTTP on first launch — a rep opening the app
+with no signal would get a silent fallback font. Bundling costs ~2 MB and makes
+type deterministic offline.
+
 ---
 
 ## Dependencies and why
@@ -135,11 +145,11 @@ sheet.
   hide-on-scroll tab bar, pull-to-refresh, skeleton and error states
 - Profile sheet with the live theme switcher, persisted
 - Remote datasource stubs behind the same interfaces
-- Tests: 25 unit + widget tests, including a render pass in all three themes
+- Inter bundled for offline-deterministic type
+- 43 tests (unit + widget + golden), clean `flutter analyze`, web build verified
 
 **Next**
 
 - Drift database + the offline cache read path (deps are already declared)
-- Golden tests across the three themes
 - Wire the period pills to the real request once the API defines scoping
 - Modules / Team / Reports / Call Reporting screens

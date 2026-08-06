@@ -66,9 +66,13 @@ class HeroCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    _stat(context, 'Sales', summary.salesLabel),
-                    const SizedBox(width: 22),
-                    _stat(context, 'Target', summary.targetLabel),
+                    Flexible(
+                      child: _stat(context, 'Sales', summary.salesLabel),
+                    ),
+                    const SizedBox(width: 18),
+                    Flexible(
+                      child: _stat(context, 'Target', summary.targetLabel),
+                    ),
                   ],
                 ),
               ],
@@ -99,6 +103,8 @@ class HeroCard extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: t.ink,
             fontSize: 15,

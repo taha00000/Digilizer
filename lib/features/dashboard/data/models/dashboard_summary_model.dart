@@ -50,16 +50,16 @@ class DashboardSummaryModel extends DashboardSummary {
   static List<dynamic> _list(dynamic v) => v is List ? v : const [];
 
   static int _int(dynamic v) => switch (v) {
-        int i => i,
-        num n => n.round(),
-        String s => int.tryParse(s) ?? 0,
+        final int i => i,
+        final num n => n.round(),
+        final String s => int.tryParse(s) ?? 0,
         _ => 0,
       };
 
   static double _double(dynamic v) => switch (v) {
-        double d => d,
-        num n => n.toDouble(),
-        String s => double.tryParse(s) ?? 0,
+        final double d => d,
+        final num n => n.toDouble(),
+        final String s => double.tryParse(s) ?? 0,
         _ => 0,
       };
 

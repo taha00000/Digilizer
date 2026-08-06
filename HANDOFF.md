@@ -119,10 +119,9 @@ or Chrome (`flutter run -d chrome`) for a quick look.
 
 > Status as of the current build. `README.md` carries the same summary.
 
-### Task 0 — Generate the platform folders (DO THIS FIRST)
-- [ ] `flutter create --platforms=ios,android --org com.digilyzr .`
-      The repo has no `ios/` or `android/` — they are machine-generated and
-      were never in the scaffold. Nothing runs until this is done.
+### Task 0 — Platform folders
+- [x] `ios/`, `android/` and `web/` generated (org `com.digilyzr`) and
+      committed. Clone and `flutter pub get` is enough.
 
 ### Task 1 — Get it building & login working
 - [x] `flutter pub get` — no codegen needed yet; models are hand-written on
@@ -162,7 +161,11 @@ or Chrome (`flutter run -d chrome`) for a quick look.
 - [x] Unit tests for the repositories and model parsing (fake datasources)
 - [x] Widget tests for login + dashboard render, including a pass in all
       three themes
-- [ ] Golden tests across all three themes
+- [x] Golden tests across all three themes (`test/golden/`), with Inter
+      bundled so goldens are deterministic and reproduce in CI
+
+Verified on Flutter 3.44.9 / Dart 3.12.2: 43 tests pass, `flutter analyze`
+clean, `flutter build web` succeeds.
 
 ---
 
