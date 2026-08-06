@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eWay — Interactive Prototype v3 · DIGILYZR</title>
+<style>
+:root{
+  --bg:#eef2f3; --ink:#0f1c22; --muted:#5d6b73; --line:#e4e9ec;
+}
+/* ===== THEME TOKENS ===== */
+/* ===== Three dark gradient themes — one shared design language ===== */
+.theme-aurora{
+  --canvas:#0a1024; --surface:#141d3a; --aink:#eef3ff; --asub:#9fb0d8; --aline:#27325c;
+  --pri:#22c3f5; --pri-d:#3d8bff; --pri-soft:#17234a; --pri-soft2:#1d2b58;
+  --info:#7c8cff; --info-soft:#1a2348; --warn:#ffc24d; --warn-soft:#352b16; --warn-tx:#ffc24d;
+  --rose:#ff6f8b; --rose-soft:#351a28; --rose-tx:#ff9db0; --lav:#a78bff; --lav-soft:#221d4a;
+  --tabbg:rgba(10,16,36,.92); --shadow:rgba(34,195,245,.34);
+  --av-bg:#17234a; --av-tx:#22c3f5; --c1:#22c3f5; --c2:#5b8cff; --c3:#ffc24d; --c4:#a78bff;
+  --g1:#22c3f5; --g2:#3d8bff; --g3:#6a7bff; --eyebrow:#8fd9ff;
+  --glow1:rgba(34,195,245,.16); --glow2:rgba(124,140,255,.16);
+  --herobg:linear-gradient(135deg,#17234a 0%,#1d2b66 55%,#0f1c52 100%); --heroborder:#2c3a78;
+  --canvasgrad:linear-gradient(180deg,#0a1024,#0b1230 60%,#0a1024);
+  --loginglow1:rgba(34,195,245,.5); --loginglow2:rgba(124,140,255,.45);
+  --logingrad:linear-gradient(170deg,#0c1330,#141d52 70%,#0a1024);
+}
+.theme-blue{
+  --canvas:#f5fafd; --surface:#ffffff; --aink:#06222e; --asub:#5a7682; --aline:#e6f1f6;
+  --pri:#00aced; --pri-d:#0089bd; --pri-soft:#e1f4fc; --pri-soft2:#c8ebf9;
+  --info:#5b6bff; --info-soft:#eaecff; --warn:#f0a500; --warn-soft:#fdf3da; --warn-tx:#a87800;
+  --rose:#f4604f; --rose-soft:#fdecea; --rose-tx:#c43d2e; --lav:#7a6cf0; --lav-soft:#edebfc;
+  --tabbg:rgba(255,255,255,.94); --shadow:rgba(0,172,237,.28);
+  --av-bg:#e1f4fc; --av-tx:#0089bd; --c1:#00aced; --c2:#0089bd; --c3:#f0a500; --c4:#7a6cf0;
+  --g1:#00aced; --g2:#0089bd; --g3:#3db8ff; --eyebrow:#0089bd;
+  --glow1:rgba(0,172,237,.10); --glow2:rgba(0,137,189,.07);
+  --herobg:linear-gradient(135deg,#e1f4fc 0%,#cfeefb 55%,#e8f6fe 100%); --heroborder:#bfe6f7;
+  --canvasgrad:linear-gradient(180deg,#f5fafd,#eef8fd 60%,#f5fafd);
+  --loginglow1:rgba(255,255,255,.35); --loginglow2:rgba(0,172,237,.25);
+  --logingrad:linear-gradient(170deg,#0089bd,#00aced 70%,#22b8f0);
+}
+.theme-bluedark{
+  --canvas:#071a23; --surface:#0e2d3b; --aink:#eafaff; --asub:#9dc1d2; --aline:#1d4a5c;
+  --pri:#22c0f5; --pri-d:#00aced; --pri-soft:#0f3142; --pri-soft2:#143d50;
+  --info:#5b9bff; --info-soft:#13294a; --warn:#f3b53d; --warn-soft:#352b16; --warn-tx:#f3b53d;
+  --rose:#ff7a6e; --rose-soft:#341c1a; --rose-tx:#ff9d92; --lav:#7a8cff; --lav-soft:#1a2046;
+  --tabbg:rgba(7,26,35,.92); --shadow:rgba(0,172,237,.4);
+  --av-bg:#0f3142; --av-tx:#22c0f5; --c1:#22c0f5; --c2:#5b9bff; --c3:#f3b53d; --c4:#7a8cff;
+  --g1:#22c0f5; --g2:#0e9fd6; --g3:#3db8ff; --eyebrow:#7fdcff;
+  --glow1:rgba(34,192,245,.14); --glow2:rgba(11,140,200,.12);
+  --herobg:linear-gradient(135deg,#0e3344 0%,#10485e 55%,#0a2e3d 100%); --heroborder:#1c5c70;
+  --canvasgrad:linear-gradient(180deg,#071a23,#08222e 60%,#071a23);
+  --loginglow1:rgba(34,192,245,.45); --loginglow2:rgba(11,140,200,.4);
+  --logingrad:linear-gradient(170deg,#06222e,#0c4054 70%,#071a23);
+}
+/* shared gradient treatment driven by per-theme vars */
+.viewport{background:
+  radial-gradient(120% 70% at 80% -5%, var(--glow1), transparent 60%),
+  radial-gradient(120% 60% at -10% 8%, var(--glow2), transparent 55%),
+  var(--canvasgrad);}
+.hero{background:var(--herobg) !important;border:1px solid var(--heroborder);box-shadow:0 14px 36px rgba(0,0,0,.35)}
+.hero .eyebrow{color:var(--eyebrow) !important}
+.hero::after{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle,var(--glow1),transparent 70%);opacity:2;pointer-events:none}
+.fab{background:linear-gradient(140deg,var(--g1),var(--g2) 60%,var(--g3)) !important;box-shadow:0 8px 22px var(--shadow)}
+.cta{background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3)) !important;box-shadow:0 10px 24px var(--shadow)}
+.login{background:
+  radial-gradient(130% 80% at 80% 0%, var(--loginglow1), transparent 55%),
+  radial-gradient(120% 80% at 0% 30%, var(--loginglow2), transparent 55%),
+  var(--logingrad) !important;}
+.pill.on{background:linear-gradient(135deg,var(--g1),var(--g2));border-color:transparent;color:#fff}
+.av{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;cursor:pointer}
+.seg button.on,.mixhead .seg button.on{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:36px 24px 70px}
+.mast{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:22px}
+.mast h1{font-size:25px;font-weight:800;letter-spacing:-.02em}
+.mast h1 span{color:#00aced}
+.mast p{color:var(--muted);font-size:14px;margin-top:6px;max-width:660px;line-height:1.55}
+.kbadge{display:inline-flex;align-items:center;gap:8px;background:#06222e;color:#fff;font-size:12px;font-weight:600;padding:8px 14px;border-radius:999px}
+.kbadge i{width:7px;height:7px;border-radius:50%;background:#00aced;display:inline-block}
+
+/* theme switcher */
+.themebar{display:flex;justify-content:center;gap:10px;margin:26px 0 8px}
+.themebtn{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:14px;
+  padding:11px 18px;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);transition:.18s}
+.themebtn:hover{border-color:#00aced}
+.themebtn.on{color:#06222e;border-color:#00aced;box-shadow:0 6px 18px rgba(0,172,237,.14)}
+.themebtn .dots{display:flex;gap:3px}
+.themebtn .dots i{width:13px;height:13px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.06)}
+
+.howto{color:var(--muted);font-size:13.5px;text-align:center;margin:18px auto 22px;max-width:760px;line-height:1.6}
+.howto b{color:var(--ink)}
+
+.stage{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;align-items:flex-start}
+.deviceCol{display:flex;flex-direction:column;align-items:center;gap:14px}
+.phone{width:332px;height:712px;border-radius:46px;padding:12px;background:#0a141a;box-shadow:0 30px 60px rgba(10,20,26,.32);position:relative}
+.notch{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:116px;height:30px;background:#0a141a;border-radius:0 0 18px 18px;z-index:60}
+.viewport{width:100%;height:100%;border-radius:34px;overflow:hidden;position:relative;background:var(--canvas);transition:background .3s}
+.scr{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;opacity:0;transform:translateX(14px);transition:opacity .3s,transform .3s;pointer-events:none}
+.scr.show{opacity:1;transform:none;pointer-events:auto}
+.scr::-webkit-scrollbar{width:0}
+
+.navrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:360px}
+.navrow button{border:1px solid var(--line);background:#fff;font:inherit;font-size:12px;font-weight:600;color:var(--muted);padding:8px 13px;border-radius:999px;cursor:pointer;transition:.18s}
+.navrow button:hover{border-color:#00aced;color:#0089bd}
+.navrow button.on{background:#00aced;border-color:#00aced;color:#fff}
+.screen-name{font-size:13px;font-weight:700;color:var(--ink)}
+
+.notes{width:296px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.notes h3{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:14px}
+.notes .n{display:flex;gap:11px;margin-bottom:13px;font-size:13px;line-height:1.5;color:#243029}
+.notes .n .d{flex:none;width:7px;height:7px;border-radius:50%;background:#00aced;margin-top:6px}
+.notes .ref{margin-top:4px;font-size:11.5px;color:var(--muted);line-height:1.5;border-top:1px solid var(--line);padding-top:12px}
+
+/* ===== in-app shared ===== */
+.scr{font-size:13.5px;color:var(--aink)}
+.stat-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 8px;font-size:12.5px;font-weight:600;color:var(--aink)}
+.appbar{padding:6px 20px 12px;display:flex;align-items:center;justify-content:space-between}
+.appbar .title{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.appbar .title small{display:block;font-size:12px;font-weight:500;color:var(--asub);margin-top:2px;letter-spacing:0}
+.appbar .av{width:38px;height:38px;border-radius:50%;background:var(--av-bg);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--av-tx);font-size:14px}
+.appbar .back{width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--aline);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--aink);cursor:pointer}
+.body{padding:4px 18px 96px}
+.pillrow{display:flex;gap:8px;margin:6px 0 16px;overflow-x:auto}
+.pillrow::-webkit-scrollbar{height:0}
+.pill{flex:none;font-size:12px;font-weight:700;padding:8px 15px;border-radius:999px;background:var(--surface);border:1px solid var(--aline);color:var(--asub);cursor:pointer;transition:.18s}
+.pill.on{background:var(--aink);color:var(--canvas);border-color:var(--aink)}
+
+.hero{background:var(--pri-soft);border-radius:24px;padding:20px;position:relative;overflow:hidden;margin-bottom:14px}
+.hero .eyebrow{font-size:11.5px;font-weight:700;color:var(--pri-d);letter-spacing:.04em;text-transform:uppercase}
+.hero .big{font-size:38px;font-weight:800;letter-spacing:-.03em;margin-top:7px;line-height:1}
+.hero .big small{font-size:18px;font-weight:700;color:var(--pri-d)}
+.hero .sub{display:flex;gap:20px;margin-top:14px}
+.hero .sub div .l{font-size:11px;color:var(--asub);font-weight:600}
+.hero .sub div .v{font-size:15px;font-weight:800;margin-top:2px}
+.hero .donut{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mcard{background:var(--surface);border:1px solid var(--aline);border-radius:20px;padding:15px}
+.mcard .l{font-size:11.5px;color:var(--asub);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.mcard .v{font-size:22px;font-weight:800;margin-top:6px;letter-spacing:-.02em}
+.mcard .d{font-size:11.5px;font-weight:700;margin-top:3px}
+.up{color:var(--pri)} .dn{color:var(--rose)}
+.mcard .bars{display:flex;align-items:flex-end;gap:4px;height:36px;margin-top:11px}
+.mcard .bars i{flex:1;border-radius:3px 3px 0 0;background:var(--pri-soft2);transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.mcard .bars i.hl{background:var(--pri)}
+.mcard .ring-inline{display:flex;align-items:center;gap:12px;margin-top:8px}
+
+.sectitle{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 11px}
+.sectitle h4{font-size:15px;font-weight:800;letter-spacing:-.01em}
+.sectitle a{font-size:12.5px;color:var(--pri-d);font-weight:700;cursor:pointer}
+
+/* ==== sales-mix card with swipeable views (donut <-> ranked bars) ==== */
+.mixcard{background:var(--surface);border:1px solid var(--aline);border-radius:22px;padding:16px;overflow:hidden}
+.mixhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mixhead .seg{display:inline-flex;background:var(--canvas);border:1px solid var(--aline);border-radius:10px;padding:3px;gap:2px}
+.mixhead .seg button{border:0;background:transparent;font:inherit;font-size:11px;font-weight:700;color:var(--asub);padding:6px 11px;border-radius:8px;cursor:pointer}
+.mixhead .seg button.on{background:var(--pri);color:#fff}
+.mixview{display:none}
+.mixview.on{display:block;animation:fade .3s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.donutview{display:flex;align-items:center;gap:16px}
+.legend{display:flex;flex-direction:column;gap:9px;flex:1}
+.legrow{display:flex;align-items:center;gap:9px;font-size:12.5px;cursor:pointer;padding:3px 4px;border-radius:8px;transition:.15s}
+.legrow:hover{background:var(--pri-soft)}
+.legrow .sq{width:10px;height:10px;border-radius:3px;flex:none}
+.legrow .nm{font-weight:600}
+.legrow b{margin-left:auto;font-weight:800}
+.legrow .pc{color:var(--asub);font-weight:700;font-size:11px;width:32px;text-align:right}
+/* ranked horizontal bars (the NEW alternative) */
+.rankrow{margin-bottom:13px;cursor:pointer}
+.rankrow:last-child{margin-bottom:2px}
+.rankrow .rtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.rankrow .rn{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700}
+.rankrow .rn .sq{width:10px;height:10px;border-radius:3px}
+.rankrow .rval{font-size:12.5px;font-weight:800}
+.rankrow .rval small{color:var(--asub);font-weight:700;font-size:11px;margin-left:5px}
+.rankrow .rtrack{height:10px;border-radius:6px;background:var(--canvas);overflow:hidden}
+.rankrow .rtrack i{display:block;height:100%;border-radius:6px;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+/* stacked share bar option */
+.sharebar{display:flex;height:30px;border-radius:9px;overflow:hidden;margin:4px 0 12px}
+.sharebar i{height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;transition:flex .6s}
+
+.chartcard{background:var(--surface);border:1px solid var(--aline);border-radius:20px;padding:16px}
+.chart{display:flex;align-items:flex-end;gap:10px;height:140px;margin-top:6px;padding-top:18px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;position:relative}
+.col .stack{width:100%;display:flex;flex-direction:column;justify-content:flex-end;height:118px}
+.col .barfill{width:74%;margin:0 auto;border-radius:6px 6px 0 0;background:var(--pri);transition:height .7s cubic-bezier(.2,.8,.2,1),background .2s;height:0}
+.col.dim .barfill{background:var(--pri-soft2)}
+.col .xl{font-size:10.5px;color:var(--asub);font-weight:700}
+.col .tip{position:absolute;top:-12px;font-size:10.5px;font-weight:800;color:var(--aink);opacity:0;transition:.2s}
+.col.act .tip{opacity:1}
+.col.act .barfill{background:var(--pri-d)}
+.seg{display:inline-flex;background:var(--canvas);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;font:inherit;font-size:11.5px;font-weight:700;color:var(--asub);padding:6px 13px;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--aink);box-shadow:0 1px 3px rgba(0,0,0,.10)}
+
+.modgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mod{background:var(--surface);border:1px solid var(--aline);border-radius:20px;padding:16px 14px;cursor:pointer;transition:.18s;text-align:left}
+.mod:active{transform:scale(.97)}
+.mod:hover{border-color:var(--pri);box-shadow:0 8px 20px var(--shadow)}
+.mod .ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:11px}
+.mod .ic svg{width:22px;height:22px;fill:none;stroke-width:1.9}
+.mod .mt{font-size:13.5px;font-weight:700;color:var(--aink)}
+.mod .ms{font-size:10.5px;color:var(--asub);margin-top:3px;line-height:1.35}
+
+.lrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--aline);border-radius:16px;padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:.15s}
+.lrow:hover{border-color:var(--pri)}
+.lrow .ic{width:40px;height:40px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center}
+.lrow .ic svg{width:20px;height:20px;fill:none;stroke-width:1.9}
+.lrow .nm{font-size:13.5px;font-weight:700}
+.lrow .ds{font-size:11px;color:var(--asub);margin-top:1px}
+.lrow .chev{margin-left:auto;color:var(--asub);opacity:.5;font-size:17px}
+.grouplbl{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--asub);margin:18px 2px 10px}
+
+.repcard{background:var(--surface);border:1px solid var(--aline);border-radius:18px;padding:14px;margin-bottom:11px;cursor:pointer;transition:.15s}
+.repcard:hover{border-color:var(--pri)}
+.repcard .top{display:flex;align-items:center;gap:11px}
+.repcard .pf{width:40px;height:40px;border-radius:12px;background:var(--pri-soft);color:var(--pri-d);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.repcard .nm{font-size:14px;font-weight:800}
+.repcard .rl{font-size:11px;color:var(--asub)}
+.repcard .achip{margin-left:auto;font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px}
+.repcard .track{height:8px;border-radius:8px;background:var(--canvas);margin-top:13px;overflow:hidden}
+.repcard .track i{display:block;height:100%;border-radius:8px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.repcard .mini{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--asub)}
+.repcard .mini b{color:var(--aink);font-weight:800;font-size:12.5px;display:block;margin-top:2px}
+.repcard .mini>div{text-align:center;flex:1}
+
+.tablecard{background:var(--surface);border:1px solid var(--aline);border-radius:20px;overflow:hidden}
+.tablecard .th{display:flex;align-items:center;padding:13px 15px;background:var(--pri-soft);border-bottom:1px solid var(--aline);font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--pri-d);cursor:pointer}
+.theme-dark .tablecard .th{color:var(--aink)}
+.tablecard .th .c{flex:1;text-align:right}
+.tablecard .th .c.first{flex:1.5;text-align:left}
+.tablecard .th .arr{font-size:8px;margin-left:3px;opacity:.7}
+.trow{display:flex;align-items:center;padding:13px 15px;border-bottom:1px solid var(--aline);font-size:12.5px;cursor:pointer;transition:.15s}
+.trow:last-child{border-bottom:0}
+.trow:hover{background:var(--pri-soft)}
+.trow .c{flex:1;text-align:right;font-weight:700}
+.trow .c.first{flex:1.5;text-align:left;font-weight:800;display:flex;align-items:center;gap:9px}
+.trow .c.first .dotb{width:8px;height:8px;border-radius:50%;flex:none}
+.trow .c .barbg{height:5px;background:var(--canvas);border-radius:5px;margin-top:5px;overflow:hidden}
+.trow .c .barbg i{display:block;height:100%;border-radius:5px;background:var(--pri)}
+.badge{display:inline-block;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px}
+.badge.g{background:var(--pri-soft);color:var(--pri-d)} .badge.a{background:var(--warn-soft);color:var(--warn-tx)} .badge.r{background:var(--rose-soft);color:var(--rose-tx)}
+
+.exp{background:var(--surface);border:1px solid var(--aline);border-radius:18px;margin-bottom:10px;overflow:hidden}
+.exp .head{display:flex;align-items:center;gap:11px;padding:14px 15px;cursor:pointer}
+.exp .head .pf{width:36px;height:36px;border-radius:11px;background:var(--info-soft);color:var(--info);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+.exp .head .nm{font-size:13.5px;font-weight:800}
+.exp .head .sub{font-size:10.5px;color:var(--asub)}
+.exp .head .ach{margin-left:auto;font-size:13px;font-weight:800;color:var(--pri-d)}
+.exp .head .cv{margin-left:10px;color:var(--asub);opacity:.6;transition:.25s}
+.exp.open .head .cv{transform:rotate(180deg)}
+.exp .panel{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.exp.open .panel{max-height:340px}
+.exp .panel .inner{padding:0 15px 15px}
+.exp .kv{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--aline);font-size:12.5px}
+.exp .kv .k{color:var(--asub);font-weight:600}
+.exp .kv .v{font-weight:800}
+
+.field{background:var(--surface);border:1px solid var(--aline);border-radius:15px;padding:13px 15px;margin-bottom:11px;cursor:pointer}
+.field .fl{font-size:10.5px;color:var(--asub);font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.field .fv{font-size:14px;font-weight:700;margin-top:5px;display:flex;justify-content:space-between;align-items:center}
+.field .fv .x{color:var(--asub);opacity:.6}
+.cta{background:var(--pri);color:#fff;text-align:center;font-weight:800;font-size:14px;padding:15px;border-radius:15px;cursor:pointer;transition:.18s;box-shadow:0 8px 18px var(--shadow)}
+.cta:active{transform:scale(.98)}
+.toast{display:flex;gap:11px;background:var(--pri-soft);border-radius:14px;padding:13px 14px;margin-bottom:13px;align-items:flex-start}
+.toast .i{width:22px;height:22px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:none}
+.toast .tx{font-size:12px;color:var(--aink);line-height:1.5}
+
+.tabbar{position:absolute;left:0;right:0;bottom:0;display:flex;background:var(--tabbg);backdrop-filter:blur(12px);border-top:1px solid var(--aline);padding:9px 8px 13px;z-index:50;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s}
+.tabbar.hidden{transform:translateY(120%);opacity:0;pointer-events:none}
+#vp>.tabbar{position:absolute}
+.tab{flex:1;text-align:center;font-size:10px;font-weight:700;color:var(--asub);opacity:.7;cursor:pointer}
+.tab svg{width:23px;height:23px;fill:none;stroke-width:1.9;stroke:currentColor;display:block;margin:0 auto 3px}
+.tab.on{color:var(--pri);opacity:1}
+.fabtab{flex:none;width:54px;position:relative}
+.fab{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:16px;background:var(--pri);box-shadow:0 8px 18px var(--shadow);display:flex;align-items:center;justify-content:center}
+.fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2.2;fill:none}
+
+/* login */
+.login{position:absolute;inset:0;display:flex;flex-direction:column;color:#fff;
+  background:linear-gradient(170deg,var(--pri-d),var(--pri) 65%);}
+/* ===== bottom sheet / modal ===== */
+.sheet-scrim{position:absolute;inset:0;background:rgba(4,8,18,.55);backdrop-filter:blur(3px);z-index:70;opacity:0;pointer-events:none;transition:opacity .28s}
+.sheet-scrim.show{opacity:1;pointer-events:auto}
+.sheet-pop{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:26px 26px 0 0;
+  border-top:1px solid var(--aline);padding:20px 20px 26px;z-index:71;transform:translateY(110%);transition:transform .32s cubic-bezier(.2,.85,.25,1);max-height:82%;overflow-y:auto}
+.sheet-pop.show{transform:none}
+.sheet-pop::-webkit-scrollbar{width:0}
+.sheet-grab{width:42px;height:5px;border-radius:5px;background:var(--aline);margin:0 auto 16px}
+.sheet-pop h3{font-size:17px;font-weight:800;margin-bottom:3px;color:var(--aink)}
+.sheet-pop .sub{font-size:12px;color:var(--asub);margin-bottom:16px}
+.opt{display:flex;align-items:center;gap:13px;padding:13px 12px;border-radius:14px;cursor:pointer;transition:.15s;border:1px solid transparent}
+.opt:hover{background:var(--pri-soft)}
+.opt .oic{width:38px;height:38px;border-radius:11px;background:var(--pri-soft);display:flex;align-items:center;justify-content:center;flex:none}
+.opt .oic svg{width:19px;height:19px;stroke:var(--pri);fill:none;stroke-width:1.9}
+.opt .otx{font-size:13.5px;font-weight:700;color:var(--aink)}
+.opt .ots{font-size:11px;color:var(--asub);margin-top:1px}
+.opt .ock{margin-left:auto;color:var(--pri);font-weight:800;font-size:15px;opacity:0}
+.opt.sel .ock{opacity:1}
+.opt.danger .oic{background:var(--rose-soft)}.opt.danger .oic svg{stroke:var(--rose)}.opt.danger .otx{color:var(--rose-tx)}
+.profcard{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:var(--pri-soft);margin-bottom:16px}
+.profcard .pav{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px}
+.profcard .pn{font-size:16px;font-weight:800;color:var(--aink)}
+.profcard .pr{font-size:12px;color:var(--asub);margin-top:2px}
+.themepick{display:flex;gap:9px;margin:6px 0 4px}
+.themepick .tp{flex:1;border-radius:13px;padding:11px 8px;cursor:pointer;border:2px solid var(--aline);text-align:center;font-size:11px;font-weight:700;transition:.15s;color:var(--aink)}
+.themepick .tp.sel{border-color:var(--pri)}
+.themepick .tp .bar{height:22px;border-radius:7px;margin-bottom:7px}
+/* in-app toast popup */
+.flash{position:absolute;left:16px;right:16px;bottom:96px;background:var(--surface);border:1px solid var(--aline);border-radius:14px;
+  padding:13px 15px;display:flex;gap:11px;align-items:center;z-index:75;box-shadow:0 12px 30px rgba(0,0,0,.4);
+  pointer-events:none;transform:translateY(140%);opacity:0;transition:transform .3s,opacity .3s}
+.flash.show{transform:none;opacity:1}
+.flash .fi{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.flash .ft{font-size:12.5px;font-weight:600;color:var(--aink);line-height:1.4}
+.login .lhead{padding:60px 30px 0;text-align:center}
+.login .logo{font-weight:800;letter-spacing:.18em;font-size:22px}
+.login .logo small{display:block;font-size:12px;letter-spacing:.05em;font-weight:600;opacity:.85;margin-top:3px}
+.login .tag{font-size:13px;opacity:.9;margin-top:14px;line-height:1.5}
+.login .sheet{margin-top:auto;background:var(--surface);border-radius:30px 30px 0 0;padding:26px 24px 30px;color:var(--aink)}
+.login .sheet h2{font-size:19px;font-weight:800;margin-bottom:4px}
+.login .sheet p{font-size:12.5px;color:var(--asub);margin-bottom:18px}
+.linput{background:var(--canvas);border:1px solid var(--aline);border-radius:14px;padding:11px 14px;margin-bottom:11px;display:flex;align-items:center;gap:11px}
+.linput svg{width:18px;height:18px;stroke:var(--asub);fill:none;stroke-width:1.9;flex:none}
+.linput .ll{font-size:10px;color:var(--asub);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.linput .lv{font-size:13.5px;font-weight:700;margin-top:2px}
+.login .row{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin:4px 0 16px}
+.login .row .rm{color:var(--asub);font-weight:600}.login .row .fp{color:var(--pri-d);font-weight:700}
+.login .face{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;font-size:12.5px;color:var(--asub);font-weight:700;cursor:pointer}
+.login .face svg{width:22px;height:22px;stroke:var(--pri-d);fill:none;stroke-width:1.8}
+.faceid{position:absolute;inset:0;background:rgba(4,16,22,.66);backdrop-filter:blur(6px);z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;pointer-events:none;transition:.3s}
+.faceid.show{opacity:1;pointer-events:auto}
+.faceid .scan{width:96px;height:96px;border-radius:26px;border:3px solid var(--pri);display:flex;align-items:center;justify-content:center;position:relative}
+.faceid .scan svg{width:54px;height:54px;stroke:#fff;fill:none;stroke-width:1.6}
+.faceid .scan::after{content:"";position:absolute;left:8px;right:8px;height:2px;background:var(--pri);box-shadow:0 0 10px var(--pri);animation:scan 1.4s ease-in-out infinite}
+@keyframes scan{0%,100%{top:14px}50%{top:78px}}
+.faceid p{color:#fff;font-size:13.5px;font-weight:700}
+
+.foot{margin-top:42px;padding-top:22px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6}
+@media(max-width:1120px){.notes{display:none}}
+</style>
+</head>
+<body class="theme-aurora" id="body">
+<div class="wrap">
+  <div class="mast">
+    <div>
+      <h1><span>eWay</span> — Interactive Prototype <span style="color:var(--muted);font-weight:600;font-size:16px">v3</span></h1>
+      <p>Three dark gradient themes in one design language — Aurora (cyan), Nebula (violet) and Tide (teal), all built from the DIGILYZR logo blues. Fully clickable: working profile, pickers, export/download and the full screen flow. Built mobile-first for the iOS Flutter rebuild.</p>
+    </div>
+    <div class="kbadge"><i></i> Circle × DIGILYZR · Concept v3</div>
+  </div>
+
+  <div class="themebar">
+    <button class="themebtn on" data-t="aurora" onclick="setTheme('aurora',this)">
+      <span class="dots"><i style="background:#0a1024"></i><i style="background:linear-gradient(135deg,#22c3f5,#3d8bff)"></i><i style="background:#a78bff"></i></span> Aurora · Gradient</button>
+    <button class="themebtn" data-t="blue" onclick="setTheme('blue',this)">
+      <span class="dots"><i style="background:#e1f4fc"></i><i style="background:linear-gradient(135deg,#00aced,#0089bd)"></i><i style="background:#06222e"></i></span> Company Blue</button>
+    <button class="themebtn" data-t="bluedark" onclick="setTheme('bluedark',this)">
+      <span class="dots"><i style="background:#071a23"></i><i style="background:linear-gradient(135deg,#22c0f5,#0e9fd6)"></i><i style="background:#0f3142"></i></span> Blue · Dark</button>
+  </div>
+
+  <div class="howto"><b>Fully clickable.</b> Switch themes above (or from the in-app profile) — the whole app re-skins live. Tap the <b>profile avatar</b> for settings, use the <b>Donut / Bars / Share</b> toggle, open the date & member pickers, log a visit, and <b>export/download</b> a report. Everything is wired.</div>
+
+  <div class="stage">
+    <div class="deviceCol">
+      <div class="phone"><div class="notch"></div>
+        <div class="viewport" id="vp">
+          <div class="faceid" id="faceid">
+            <div class="scan"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/><path d="M12 10v3.5M10 16s.8 1 2 1 2-1 2-1"/></svg></div>
+            <p>Face ID — authenticating…</p>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name" id="screenName">Login</div>
+      <div class="navrow" id="navrow"></div>
+    </div>
+    <div class="notes" id="notesPanel"></div>
+  </div>
+
+  <div class="foot">
+    eWay · DIGILYZR pharma SFA · iOS concept v3 · prepared by Circle.<br>
+    Aurora · Nebula · Tide — one gradient design language from the DIGILYZR logo palette · references: HubSpot CRM, Chase, modern fintech dashboards.
+  </div>
+</div>
+
+<script>
+const I={
+home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>',
+grid:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
+doc:'<svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+team:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 11a3 3 0 0 0 0-6M21 20a6 6 0 0 0-5-5.9"/></svg>',
+plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+call:'<svg viewBox="0 0 24 24"><path d="M5 4h4l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5V20a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+plan:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="2.5"/><path d="M8 3v3M16 3v3M4 9h16M8 13h5M8 17h7"/></svg>',
+sale:'<svg viewBox="0 0 24 24"><path d="M4 7h16l-1.4 11a2 2 0 0 1-2 1.7H7.4a2 2 0 0 1-2-1.7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
+roi:'<svg viewBox="0 0 24 24"><path d="M4 18l5-5 4 3 7-8"/><path d="M16 8h4v4"/></svg>',
+brick:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M9 5v5M15 10v9"/></svg>',
+rx:'<svg viewBox="0 0 24 24"><path d="M6 4h5a3 3 0 0 1 0 6H6zM6 10v10M14 14l6 6M20 14l-6 6"/></svg>',
+mkt:'<svg viewBox="0 0 24 24"><path d="M4 14V9a1 1 0 0 1 1-1h3l8-4v14l-8-4H5a1 1 0 0 1-1-1z"/><path d="M18 9a3 3 0 0 1 0 6"/></svg>',
+hr:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 10l2 2 4-4"/></svg>',
+map:'<svg viewBox="0 0 24 24"><path d="M9 4L4 6v14l5-2 6 2 5-2V4l-5 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>',
+badge:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="2.5"/><circle cx="12" cy="9" r="2.5"/><path d="M8 21l4-2 4 2"/></svg>',
+warn:'<svg viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.4v.2"/></svg>',
+shield:'<svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
+inbox:'<svg viewBox="0 0 24 24"><path d="M4 13l2-8h12l2 8v5H4z"/><path d="M4 13h5a3 3 0 0 0 6 0h5"/></svg>',
+search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>',
+lock:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+user2:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
+bldg:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></svg>',
+face:'<svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/><path d="M12 10v3.5M10 16s.8 1 2 1 2-1 2-1"/></svg>'
+};
+function cvar(n){return getComputedStyle(document.getElementById('body')).getPropertyValue(n).trim();}
+function donut(segs,size,thick,center,sublabel){
+  const r=(size-thick)/2,C=2*Math.PI*r;let off=0;
+  let circles=segs.map(s=>{const len=C*s.v/100;const c=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${thick}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${size/2} ${size/2})"/>`;off+=len;return c;}).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${circles}${center?`<text x="${size/2}" y="${size/2-1}" text-anchor="middle" font-size="${size*0.19}" font-weight="800" fill="${cvar('--aink')}">${center}</text>${sublabel?`<text x="${size/2}" y="${size/2+13}" text-anchor="middle" font-size="9" font-weight="700" fill="${cvar('--asub')}">${sublabel}</text>`:''}`:''}</svg>`;
+}
+function statbar(){return `<div class="stat-bar"><span>9:41</span><span class="r">●●● ⌃ ▮</span></div>`;}
+function appbar(title,sub,back){return `<div class="appbar">${back?`<div class="back" onclick="nav('${back}')">‹</div>`:''}<div class="title">${title}${sub?`<small>${sub}</small>`:''}</div>${back?'<div style="width:36px"></div>':`<div class="av" onclick="openProfile()">DS</div>`}</div>`;}
+
+/* ===== sales mix data (the chart the boss flagged) ===== */
+const MIX=[{n:'Retail',v:16.0,p:67,c:'--c1'},{n:'Institution',v:4.5,p:19,c:'--c2'},{n:'Doctor',v:2.2,p:9,c:'--c3'},{n:'Wholesale',v:1.4,p:5,c:'--c4'}];
+function mixCard(){
+  return `<div class="mixcard">
+    <div class="mixhead"><div style="font-size:14px;font-weight:800">Sales by type</div>
+      <div class="seg" id="mixSeg">
+        <button onclick="mixView('donut',this)">Donut</button>
+        <button class="on" onclick="mixView('bars',this)">Bars</button>
+        <button onclick="mixView('share',this)">Share</button>
+      </div></div>
+    <div class="mixview" id="mv-donut"></div>
+    <div class="mixview on" id="mv-bars"></div>
+    <div class="mixview" id="mv-share"></div>
+  </div>`;
+}
+function renderMix(){
+  const total=MIX.reduce((a,b)=>a+b.v,0).toFixed(1);
+  // donut
+  const d=document.getElementById('mv-donut'); if(d){
+    d.innerHTML=`<div class="donutview"><div style="flex:none">${donut(MIX.map(m=>({v:m.p,color:cvar(m.c)})),120,20,total+'M','total')}</div>
+      <div class="legend">${MIX.map(m=>`<div class="legrow"><span class="sq" style="background:${cvar(m.c)}"></span><span class="nm">${m.n}</span><b>${m.v}M</b><span class="pc">${m.p}%</span></div>`).join('')}</div></div>`;
+  }
+  // ranked bars (NEW)
+  const b=document.getElementById('mv-bars'); if(b){
+    const max=Math.max(...MIX.map(m=>m.v));
+    b.innerHTML=`<div style="font-size:11px;color:var(--asub);font-weight:700;margin:2px 0 12px">Ranked by value · total ${total}M</div>`+
+      MIX.map(m=>`<div class="rankrow"><div class="rtop"><span class="rn"><span class="sq" style="background:${cvar(m.c)}"></span>${m.n}</span>
+        <span class="rval">${m.v}M<small>${m.p}%</small></span></div>
+        <div class="rtrack"><i data-w="${m.v/max*100}" style="background:${cvar(m.c)}"></i></div></div>`).join('');
+    requestAnimationFrame(()=>b.querySelectorAll('.rtrack i').forEach(i=>i.style.width=i.dataset.w+'%'));
+  }
+  // 100% share bar (NEW)
+  const s=document.getElementById('mv-share'); if(s){
+    s.innerHTML=`<div style="font-size:11px;color:var(--asub);font-weight:700;margin:2px 0 12px">Composition · 100% of ${total}M</div>
+      <div class="sharebar">${MIX.map(m=>`<i style="flex:${m.p};background:${cvar(m.c)}">${m.p>=9?m.p+'%':''}</i>`).join('')}</div>
+      <div class="legend">${MIX.map(m=>`<div class="legrow"><span class="sq" style="background:${cvar(m.c)}"></span><span class="nm">${m.n}</span><b>${m.v}M</b><span class="pc">${m.p}%</span></div>`).join('')}</div>`;
+  }
+}
+function mixView(v,btn){document.querySelectorAll('#mixSeg button').forEach(x=>x.classList.remove('on'));btn.classList.add('on');
+  ['donut','bars','share'].forEach(k=>document.getElementById('mv-'+k).classList.toggle('on',k===v));renderMix();}
+
+/* ===== screens ===== */
+function loginScreen(){return `<div class="scr" id="s-login"><div class="login">
+  <div class="lhead"><div class="logo">DIGILYZR<small>e\u2113way · pharma SFA</small></div>
+    <div class="tag">Field intelligence for medical reps<br>& management teams.</div></div>
+  <div class="sheet"><h2>Sign in</h2><p>Enter your company workspace to continue.</p>
+    <div class="linput">${I.bldg}<div><div class="ll">Company</div><div class="lv">HILAL</div></div></div>
+    <div class="linput">${I.user2}<div><div class="ll">Username</div><div class="lv">demo.support</div></div></div>
+    <div class="linput">${I.lock}<div><div class="ll">Password</div><div class="lv">••••••••</div></div></div>
+    <div class="row"><span class="rm" onclick="toggleRemember(this)">☑ Remember me</span><span class="fp" onclick="flash('Reset link sent to your registered email.')">Forgot password?</span></div>
+    <div class="cta" onclick="doFaceThenDash()">Sign in</div>
+    <div class="face" onclick="doFaceThenDash()">${I.face} Unlock with Face ID</div>
+  </div></div></div>`;}
+
+function dashScreen(){return `<div class="scr" id="s-dash">${statbar()}${appbar('Good morning','Demo · HILAL · ACC 999903')}
+  <div class="body">
+    <div class="pillrow"><span class="pill on" onclick="selPill(this)">This month</span><span class="pill" onclick="selPill(this)">Day</span><span class="pill" onclick="selPill(this)">YTD</span><span class="pill" onclick="selPill(this)">vs LY</span></div>
+    <div class="hero"><div class="eyebrow">Achievement · MTD</div><div class="big">58<small>%</small></div>
+      <div class="sub"><div><div class="l">Sales</div><div class="v">PKR 30.1M</div></div><div><div class="l">Target</div><div class="v">PKR 51.7M</div></div></div>
+      <div class="donut" id="heroDonut"></div></div>
+    <div class="grid2">
+      <div class="mcard"><div class="l">Day to date</div><div class="v">109%</div><div class="d up">▲ above target</div>
+        <div class="bars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:70%"></i><i class="hl" style="height:100%"></i></div></div>
+      <div class="mcard"><div class="l">Coverage</div><div class="v">74%</div><div class="d" style="color:var(--asub)">4,099 / 5,514</div>
+        <div class="ring-inline" id="covRing"></div></div>
+    </div>
+    <div class="sectitle"><h4>Sales trend</h4><div class="seg"><button class="on" onclick="setTrend(this,'m')">6M</button><button onclick="setTrend(this,'q')">4Q</button></div></div>
+    <div class="chartcard"><div class="chart" id="trendChart"></div></div>
+    <div class="sectitle"><h4>Sales mix</h4><a onclick="nav('reports')">Reports ›</a></div>
+    ${mixCard()}
+    <div class="sectitle"><h4>Top brands</h4><a onclick="nav('rep')">Details ›</a></div>
+    <div class="tablecard" id="brandTable"></div>
+    <div class="sectitle"><h4>Today's calls</h4><a onclick="nav('call')">Open ›</a></div>
+    <div class="grid2">
+      <div class="mcard"><div class="l">Planned done</div><div class="v">205<span style="font-size:14px;color:var(--asub)">/1242</span></div><div class="d up">16% of plan</div></div>
+      <div class="mcard"><div class="l">Total done</div><div class="v">285</div><div class="d up">▲ +80 unplanned</div></div>
+    </div>
+  </div></div>`;}
+
+function modScreen(){
+  const tint={call:['--pri-soft','--pri'],plan:['--info-soft','--info'],sale:['--warn-soft','--warn'],roi:['--lav-soft','--lav'],brick:['--pri-soft','--pri'],rx:['--rose-soft','--rose'],mkt:['--info-soft','--info'],hr:['--warn-soft','--warn']};
+  const mod=(k,t,s,go)=>`<button class="mod" onclick="${go?`nav('${go}')`:`flash('${t} — opening…')`}"><div class="ic" style="background:var(${tint[k][0]})">${I[k].replace('<svg','<svg stroke="var('+tint[k][1]+')"')}</div><div class="mt">${t}</div><div class="ms">${s}</div></button>`;
+  return `<div class="scr" id="s-mods">${statbar()}${appbar('Modules','Field & management tools')}
+  <div class="body">
+    <div class="lrow" onclick="nav('team')"><div class="ic" style="background:var(--pri-soft)">${I.team.replace('<svg','<svg stroke="var(--pri)"')}</div>
+      <div><div class="nm">My Team · ZSM (10)</div><div class="ds">Targets, achievement & rep reports</div></div><div class="chev">›</div></div>
+    <div class="grouplbl">Daily work</div>
+    <div class="modgrid">${mod('call','Call Reporting','Log doctor & chemist visits','call')}${mod('plan','Work Plan','Plan visits for the week','call')}${mod('sale','Sale Module','Orders & invoices')}${mod('roi','ROI Service','Investment return')}</div>
+    <div class="grouplbl">Analysis & approvals</div>
+    <div class="modgrid">${mod('brick','Brick Analysis','Territory performance','team')}${mod('rx','Extra Discount','Request & approvals')}${mod('mkt','Marketing','Campaign activity')}${mod('hr','Field Force HR','Team & leave','team')}</div>
+  </div></div>`;}
+
+function callScreen(){return `<div class="scr" id="s-call">${statbar()}${appbar('Call Reporting','Today · 17 Jun 2026','mods')}
+  <div class="body">
+    <div class="pillrow"><span class="pill on" onclick="selPill(this)">Doctors</span><span class="pill" onclick="selPill(this)">Chemists</span><span class="pill" onclick="selPill(this)">Institutions</span></div>
+    <div class="grid2" style="margin-bottom:4px"><div class="mcard"><div class="l">Planned</div><div class="v">8</div></div><div class="mcard"><div class="l">Done</div><div class="v" style="color:var(--pri)">6</div><div class="d up">75% rate</div></div></div>
+    <div class="sectitle"><h4>Visit list</h4><a onclick="openAddVisit()">Add ›</a></div>
+    <div class="lrow"><div class="ic" style="background:var(--pri-soft)">${I.badge.replace('<svg','<svg stroke="var(--pri)"')}</div><div><div class="nm">Dr. Anwar Sheikh</div><div class="ds">Cardiologist · 09:20 · Planned</div></div><span class="badge g" style="margin-left:auto">Done</span></div>
+    <div class="lrow"><div class="ic" style="background:var(--pri-soft)">${I.badge.replace('<svg','<svg stroke="var(--pri)"')}</div><div><div class="nm">Dr. Saleem Raza</div><div class="ds">GP · 10:05 · Planned</div></div><span class="badge g" style="margin-left:auto">Done</span></div>
+    <div class="lrow"><div class="ic" style="background:var(--warn-soft)">${I.badge.replace('<svg','<svg stroke="var(--warn)"')}</div><div><div class="nm">Dr. Iqbal Khan</div><div class="ds">Physician · 11:30 · Unplanned</div></div><span class="badge a" style="margin-left:auto">Logged</span></div>
+    <div class="lrow"><div class="ic" style="background:var(--rose-soft)">${I.warn.replace('<svg','<svg stroke="var(--rose)"')}</div><div><div class="nm">Dr. Rana Tahir</div><div class="ds">Surgeon · 12:45 · Planned</div></div><span class="badge r" style="margin-left:auto">Missed</span></div>
+    <div style="margin-top:14px" class="cta" onclick="openAddVisit()">＋ Log a new visit</div>
+  </div></div>`;}
+
+const TEAM=[
+  {ini:'GZ',nm:'Gohar Zaman',role:'Assoc. Director',code:'004324',ach:75,sales:'6.5M',target:'8.7M',golm:'15',goly:'109',clr:'--pri-d',soft:'--pri-soft'},
+  {ini:'RZ',nm:'Raheel Zafar',role:'Marketing Mgr',code:'004200',ach:59,sales:'3.9M',target:'6.7M',golm:'1',goly:'97',clr:'--warn-tx',soft:'--warn-soft'},
+  {ini:'ZM',nm:'Zia Muhammad',role:'Product Mgr',code:'004196',ach:51,sales:'3.8M',target:'7.4M',golm:'4',goly:'40',clr:'--warn-tx',soft:'--warn-soft'},
+  {ini:'IZ',nm:'Imran Zafar',role:'Comm. Officer',code:'004291',ach:49,sales:'3.3M',target:'6.5M',golm:'16',goly:'42',clr:'--rose-tx',soft:'--rose-soft'}
+];
+let teamSort='ach';
+function repCardHTML(r){return `<div class="repcard" onclick="nav('rep')"><div class="top"><div class="pf">${r.ini}</div><div><div class="nm">${r.nm}</div><div class="rl">${r.role} · ${r.code}</div></div><span class="achip" style="background:var(${r.soft});color:var(${r.clr})">${r.ach}% ACH</span></div><div class="track"><i style="width:${r.ach}%;background:var(${r.clr})"></i></div><div class="mini"><div>Sales<b>${r.sales}</b></div><div>Target<b>${r.target}</b></div><div>GoLM<b>${r.golm}</b></div><div>GoLY<b>${r.goly}</b></div></div></div>`;}
+function teamSorted(){const d=[...TEAM];if(teamSort==='ach')d.sort((a,b)=>b.ach-a.ach);else d.sort((a,b)=>a.nm.localeCompare(b.nm));return d;}
+function setTeamSort(mode,btn){teamSort=mode;btn.parentNode.querySelectorAll('button').forEach(x=>x.classList.remove('on'));btn.classList.add('on');
+  const wrap=document.getElementById('repList');if(wrap)wrap.innerHTML=teamSorted().map(repCardHTML).join('');}
+function teamScreen(){
+  return `<div class="scr" id="s-team">${statbar()}${appbar('My Team','Zonal Sales · 10 members','mods')}
+  <div class="body">
+    <div class="hero" style="background:var(--info-soft)"><div class="eyebrow" style="color:var(--info)">Zone achievement</div><div class="big">58.24<small style="color:var(--info)">%</small></div>
+      <div class="sub"><div><div class="l">Sales</div><div class="v">30.1M</div></div><div><div class="l">Target</div><div class="v">51.7M</div></div><div><div class="l">GoLY</div><div class="v" style="color:var(--pri)">+59.9%</div></div></div></div>
+    <div class="sectitle"><h4>Representatives</h4><div class="seg"><button class="${teamSort==='ach'?'on':''}" onclick="setTeamSort('ach',this)">Achievement</button><button class="${teamSort==='name'?'on':''}" onclick="setTeamSort('name',this)">Name</button></div></div>
+    <div id="repList">${teamSorted().map(repCardHTML).join('')}</div>
+  </div></div>`;}
+
+function repScreen(){
+  const exp=(l,brand,form,ach,t,s,golm,goly,tu,su,open)=>`<div class="exp ${open?'open':''}" onclick="toggleExp(this)"><div class="head"><div class="pf">${l}</div><div><div class="nm">${brand}</div><div class="sub">${form}</div></div><div class="ach">${ach}%</div><div class="cv">⌄</div></div><div class="panel"><div class="inner"><div class="kv"><span class="k">Target</span><span class="v">${t} <span style="color:var(--asub);font-weight:600">· ${tu} u</span></span></div><div class="kv"><span class="k">Sales</span><span class="v">${s} <span style="color:var(--asub);font-weight:600">· ${su} u</span></span></div><div class="kv"><span class="k">Growth over last month</span><span class="v" style="color:var(--pri)">+${golm}%</span></div><div class="kv"><span class="k">Growth over last year</span><span class="v" style="color:var(--pri)">+${goly}%</span></div></div></div></div>`;
+  return `<div class="scr" id="s-rep">${statbar()}${appbar('Gohar Zaman','004324 · Assoc. Director','team')}
+  <div class="body">
+    <div class="hero"><div class="eyebrow">Achievement</div><div class="big">75<small>%</small></div>
+      <div class="sub"><div><div class="l">Sales</div><div class="v">6.5M</div></div><div><div class="l">Target</div><div class="v">8.7M</div></div><div><div class="l">GoLY</div><div class="v" style="color:var(--pri-d)">+109%</div></div></div>
+      <div class="donut" id="repDonut"></div></div>
+    <div class="sectitle"><h4>Product-wise sale</h4><a>5 brands</a></div>
+    ${exp('V','Vlep','Tablets 500mg',77,'3.7M','2.9M',25,68,'2,172','1,686',true)}
+    ${exp('C','Cubriva','Capsules',73,'2.0M','1.5M',5,132,'1,040','760',false)}
+    ${exp('C','Carlep','Syrup',96,'627K','602K',46,467,'418','402',false)}
+    ${exp('S','Seipil','Tablets',62,'2.3M','1.4M',12,55,'1,200','690',false)}
+  </div></div>`;}
+
+function reportsScreen(){
+  const row=(ic,clr,soft,nm,ds,go)=>`<div class="lrow" onclick="${go?`nav('${go}')`:`flash('${nm} — opening report…')`}"><div class="ic" style="background:var(${soft})">${I[ic].replace('<svg','<svg stroke="var('+clr+')"')}</div><div><div class="nm">${nm}</div><div class="ds">${ds}</div></div><div class="chev">›</div></div>`;
+  return `<div class="scr" id="s-reports">${statbar()}${appbar('Reports','Search & export')}
+  <div class="body">
+    <div class="field" style="display:flex;align-items:center;gap:10px;cursor:text" onclick="flash('Search — type to filter reports.')">${I.search.replace('<svg','<svg stroke="var(--asub)" style="width:18px;height:18px"')}<span style="color:var(--asub);opacity:.7;font-weight:600">Search reports…</span></div>
+    <div class="grouplbl">Call reports</div>
+    ${row('map','--pri','--pri-soft','Activity Details','By rep & date','report')}
+    ${row('map','--info','--info-soft','Activity on Map','Geo-tagged visits','report')}
+    ${row('badge','--pri','--pri-soft','Doctor Interaction','Engagement quality','report')}
+    ${row('warn','--warn','--warn-soft','Visit Deviation','Off-plan visits','report')}
+    <div class="grouplbl">Chemist & bonus</div>
+    ${row('shield','--pri','--pri-soft','Chemist Activity','Coverage & calls','report')}
+    ${row('doc','--lav','--lav-soft','Bonus & Discount Status','Pending & approved','report')}
+    <div class="grouplbl">Customer registration</div>
+    ${row('user','--info','--info-soft','Doctor Registration','Add & verify')}
+    ${row('inbox','--warn','--warn-soft','Pending Registrations','3 awaiting review')}
+  </div></div>`;}
+
+function reportOutScreen(){return `<div class="scr" id="s-report">${statbar()}${appbar('Activity Details','Call report','reports')}
+  <div class="body">
+    <div class="field" onclick="openPicker('date')"><div class="fl">Date</div><div class="fv">17 Jun 2026 <span class="x">▾</span></div></div>
+    <div class="field" onclick="openPicker('member')"><div class="fl">Team member</div><div class="fv">Gohar Zaman · 004324 <span class="x">▾</span></div></div>
+    <div class="cta" onclick="showReport()">View report</div>
+    <div id="reportOut" style="display:none;margin-top:16px">
+      <div class="toast"><div class="i">✓</div><div class="tx"><b>Report ready.</b> 6 visits for Gohar Zaman on 17 Jun. Pull to refresh for live data.</div></div>
+      <div class="sectitle" style="margin-top:4px"><h4>Visit summary</h4><a onclick="doExport()">Export ›</a></div>
+      <div class="tablecard" id="visitTable"></div>
+      <div class="sectitle"><h4>Coverage</h4></div>
+      <div class="grid2"><div class="mcard"><div class="l">Done</div><div class="v">6</div></div>
+        <div class="mcard"><div class="l">Completion</div><div class="v" style="color:var(--pri)">75%</div><div class="ring-inline" id="compRing"></div></div></div>
+    </div>
+  </div></div>`;}
+
+function tabbarHTML(){const t=(k,lbl,ic)=>`<div class="tab" data-tab="${k}" onclick="nav('${k}')">${I[ic]}${lbl}</div>`;
+  return `<div class="tabbar" id="tabbar">${t('dash','Home','home')}${t('mods','Modules','grid')}<div class="fabtab"><div class="fab" onclick="nav('call')">${I.plus}</div></div>${t('team','Team','team')}${t('reports','Reports','doc')}</div>`;}
+
+/* ===== interactive data ===== */
+const brandData=[{n:'Vlep',sales:8.8,ach:63,goly:58,c:'--c1'},{n:'Cubriva',sales:8.3,ach:64,goly:101,c:'--c2'},{n:'Carlep',sales:4.9,ach:64,goly:179,c:'--c3'},{n:'Seipil',sales:2.3,ach:62,goly:55,c:'--c4'},{n:'Prixteen',sales:2.0,ach:58,goly:40,c:'--rose'}];
+let brandSort={key:'sales',dir:-1};
+function renderBrandTable(){const el=document.getElementById('brandTable');if(!el)return;
+  const d=[...brandData].sort((a,b)=>(a[brandSort.key]>b[brandSort.key]?1:-1)*brandSort.dir);
+  const max=Math.max(...brandData.map(x=>x.sales));const arr=k=>brandSort.key===k?(brandSort.dir<0?'▼':'▲'):'';
+  el.innerHTML=`<div class="th"><div class="c first" onclick="sortBrand('n')">Brand <span class="arr">${arr('n')}</span></div><div class="c" onclick="sortBrand('sales')">Sales <span class="arr">${arr('sales')}</span></div><div class="c" onclick="sortBrand('ach')">Ach <span class="arr">${arr('ach')}</span></div><div class="c" onclick="sortBrand('goly')">GoLY <span class="arr">${arr('goly')}</span></div></div>`+
+    d.map(r=>`<div class="trow" onclick="nav('rep')"><div class="c first"><span class="dotb" style="background:${cvar(r.c)}"></span>${r.n}</div><div class="c">${r.sales}M<div class="barbg"><i style="width:${r.sales/max*100}%;background:${cvar(r.c)}"></i></div></div><div class="c">${r.ach}%</div><div class="c"><span class="badge ${r.goly>=100?'g':r.goly>=50?'a':'r'}">+${r.goly}%</span></div></div>`).join('');}
+function sortBrand(k){brandSort.dir=brandSort.key===k?-brandSort.dir:(k==='n'?1:-1);brandSort.key=k;renderBrandTable();}
+function renderVisitTable(){const el=document.getElementById('visitTable');if(!el)return;
+  const rows=[['09:20','Dr. Anwar','Planned','Done','g'],['10:05','Dr. Saleem','Planned','Done','g'],['11:30','Dr. Iqbal','Unplanned','Logged','a'],['12:45','Dr. Rana','Planned','Missed','r']];
+  el.innerHTML=`<div class="th"><div class="c first" style="flex:1">Time</div><div class="c first" style="flex:1.6">Doctor</div><div class="c" style="flex:1.1">Type</div><div class="c" style="flex:1.1">Status</div></div>`+
+    rows.map(r=>`<div class="trow"><div class="c first" style="flex:1">${r[0]}</div><div class="c first" style="flex:1.6;font-weight:700">${r[1]}</div><div class="c" style="flex:1.1;color:var(--asub);font-weight:600">${r[2]}</div><div class="c" style="flex:1.1"><span class="badge ${r[4]}">${r[3]}</span></div></div>`).join('');}
+const trendM={m:[42,48,45,58,62,71],q:[140,165,158,182]},trendL={m:['Jan','Feb','Mar','Apr','May','Jun'],q:['Q1','Q2','Q3','Q4']};let trendMode='m';
+function renderTrend(){const el=document.getElementById('trendChart');if(!el)return;const data=trendM[trendMode],labels=trendL[trendMode],max=Math.max(...data);
+  el.innerHTML=data.map((v,i)=>`<div class="col ${i===data.length-1?'act':''}" onclick="actCol(this)"><div class="tip">${v}M</div><div class="stack"><div class="barfill" data-h="${v/max*100}"></div></div><div class="xl">${labels[i]}</div></div>`).join('');
+  requestAnimationFrame(()=>el.querySelectorAll('.barfill').forEach(b=>b.style.height=b.dataset.h+'%'));}
+function setTrend(btn,m){btn.parentNode.querySelectorAll('button').forEach(x=>x.classList.remove('on'));btn.classList.add('on');trendMode=m;renderTrend();}
+function actCol(c){c.parentNode.querySelectorAll('.col').forEach(x=>x.classList.remove('act'));c.classList.add('act');}
+
+/* ===== nav ===== */
+const SCREENS={login:'Login',dash:'Dashboard',mods:'Modules',call:'Call Reporting',team:'My Team',rep:'Rep · Product Sale',reports:'Reports',report:'Report Output'};
+const ORDER=['login','dash','mods','call','team','rep','reports','report'];
+const BUILD={login:loginScreen,dash:dashScreen,mods:modScreen,call:callScreen,team:teamScreen,rep:repScreen,reports:reportsScreen,report:reportOutScreen};
+const NOTES={
+ login:[['Company + Username + Password matches current eWay, plus Face ID. Header uses the live company blue.']],
+ dash:[['New: the Sales-mix card has Donut / Bars / Share toggles — bars & share are fresh alternatives to the existing pie.'],['One hero number leads; trend chart and tables are interactive.']],
+ mods:[['Flat two-tone icons on tinted tiles — re-skins automatically per theme.']],
+ call:[['Plain-language status badges; primary action always one tap away.']],
+ team:[['Manager view: achievement bar per rep, colour-coded good / watch / behind.']],
+ rep:[['Expandable product rows keep dense tables tidy (HubSpot pattern).']],
+ reports:[['Grouped, searchable list with tinted category icons.']],
+ report:[['Friendly toast instead of raw sync errors; aesthetic table + coverage ring.']]
+};
+// which bottom tab is highlighted for each screen (sub-screens map to a parent tab)
+const TABMAP={dash:'dash',mods:'mods',call:'mods',team:'team',rep:'team',reports:'reports',report:'reports'};
+let scrollHandler=null;
+function nav(key){
+  if(typeof closeSheet==='function')closeSheet();
+  let scr=document.getElementById('s-'+key);
+  if(!scr){document.getElementById('vp').insertAdjacentHTML('afterbegin',BUILD[key]());scr=document.getElementById('s-'+key);}
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('show'));scr.classList.add('show');scr.scrollTop=0;
+  document.getElementById('screenName').textContent=SCREENS[key];
+  document.querySelectorAll('#navrow button').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
+  const np=document.getElementById('notesPanel');np.innerHTML=`<h3>Design notes · ${SCREENS[key]}</h3>`+NOTES[key].map(n=>`<div class="n"><span class="d"></span>${n[0]}</div>`).join('')+`<div class="ref">Aurora gradient design language · DIGILYZR logo blues · all elements interactive.</div>`;
+  manageTabbar(key,scr);
+  paint(key);
+}
+function manageTabbar(key,scr){
+  const bar=document.getElementById('tabbar');
+  if(key==='login'){bar.style.display='none';return;}
+  bar.style.display='flex';bar.classList.remove('hidden');
+  // highlight the right tab
+  const active=TABMAP[key];
+  bar.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===active));
+  // detach previous scroll listener, attach to the now-visible screen
+  if(scrollHandler&&scrollHandler.el){scrollHandler.el.removeEventListener('scroll',scrollHandler.fn);}
+  let lastY=scr.scrollTop,ticking=false;
+  const fn=()=>{
+    if(ticking)return;ticking=true;
+    requestAnimationFrame(()=>{
+      const y=scr.scrollTop;
+      if(y>lastY+6 && y>40){bar.classList.add('hidden');}      // scrolling down → hide
+      else if(y<lastY-6){bar.classList.remove('hidden');}       // scrolling up → show
+      if(y<=4)bar.classList.remove('hidden');                   // at top → always show
+      lastY=y;ticking=false;
+    });
+  };
+  scr.addEventListener('scroll',fn,{passive:true});
+  scrollHandler={el:scr,fn};
+}
+function paint(key){
+  if(key==='dash'){const h=document.getElementById('heroDonut');if(h)h.innerHTML=donut([{v:58,color:cvar('--pri')},{v:42,color:cvar('--pri-soft2')}],92,11,'58%','ACH');
+    const c=document.getElementById('covRing');if(c)c.innerHTML=donut([{v:74,color:cvar('--info')},{v:26,color:cvar('--info-soft')}],46,7,'')+`<span style="font-size:11px;color:var(--asub);font-weight:700">doctors<br>covered</span>`;
+    renderTrend();renderMix();renderBrandTable();}
+  if(key==='rep'){const r=document.getElementById('repDonut');if(r)r.innerHTML=donut([{v:75,color:cvar('--pri')},{v:25,color:cvar('--pri-soft2')}],92,11,'75%','ACH');}
+  if(key==='report'){/* drawn on demand */}
+}
+function doFaceThenDash(){const f=document.getElementById('faceid');f.classList.add('show');setTimeout(()=>{f.classList.remove('show');nav('dash');},1500);}
+function showReport(){document.getElementById('reportOut').style.display='block';renderVisitTable();
+  const cr=document.getElementById('compRing');if(cr)cr.innerHTML=donut([{v:75,color:cvar('--pri')},{v:25,color:cvar('--pri-soft')}],42,6,'')+`<span style="font-size:11px;color:var(--asub);font-weight:700">6 of 8<br>planned</span>`;
+  document.getElementById('reportOut').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function toggleExp(e){e.classList.toggle('open');}
+function selPill(el){el.parentNode.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');}
+function pulse(el){el.style.transition='transform .12s';el.style.transform='scale(.96)';setTimeout(()=>el.style.transform='',130);}
+
+/* ===== bottom-sheet + flash system ===== */
+const THEME_LABEL={aurora:'Aurora · Gradient',blue:'Company Blue',bluedark:'Blue · Dark'};
+let curTheme='aurora';
+function ensureScrim(){
+  let s=document.getElementById('scrim');
+  if(!s){const vp=document.getElementById('vp');
+    vp.insertAdjacentHTML('beforeend','<div class="sheet-scrim" id="scrim" onclick="closeSheet()"></div><div class="sheet-pop" id="sheet"></div>');
+    s=document.getElementById('scrim');}
+  return s;}
+function openSheet(html){
+  ensureScrim();
+  const sh=document.getElementById('sheet');
+  sh.innerHTML='<div class="sheet-grab"></div>'+html;
+  document.getElementById('scrim').classList.add('show');
+  requestAnimationFrame(()=>sh.classList.add('show'));
+}
+function closeSheet(){
+  const sh=document.getElementById('sheet'),sc=document.getElementById('scrim');
+  if(sh)sh.classList.remove('show');if(sc)sc.classList.remove('show');
+}
+function flash(msg){
+  let f=document.getElementById('flash');
+  if(!f){document.getElementById('vp').insertAdjacentHTML('beforeend','<div class="flash" id="flash"><div class="fi">✓</div><div class="ft"></div></div>');f=document.getElementById('flash');}
+  f.querySelector('.ft').textContent=msg;f.classList.add('show');
+  clearTimeout(window._ft);window._ft=setTimeout(()=>f.classList.remove('show'),2600);
+}
+
+/* profile sheet */
+function openProfile(){
+  const tp=t=>`<div class="tp ${curTheme===t?'sel':''}" onclick="pickTheme('${t}')">
+    <div class="bar" style="background:linear-gradient(135deg,${t==='aurora'?'#22c3f5,#3d8bff':t==='blue'?'#00aced,#0089bd':'#22c0f5,#0e9fd6'})"></div>${THEME_LABEL[t].split(' · ')[0]}</div>`;
+  openSheet(`
+    <div class="profcard"><div class="pav">DS</div><div><div class="pn">Demo Support</div><div class="pr">HILAL · ACC 999903 · ZSM</div></div></div>
+    <div class="opt" onclick="flash('Opening your profile…')"><div class="oic">${I.user2}</div><div><div class="otx">My profile</div><div class="ots">Personal details & role</div></div><div class="ock">›</div></div>
+    <div class="opt" onclick="flash('Notification settings opened.')"><div class="oic">${I.inbox}</div><div><div class="otx">Notifications</div><div class="ots">Alerts & sync updates</div></div><div class="ock">›</div></div>
+    <div class="opt" onclick="flash('Help & support opened.')"><div class="oic">${I.shield}</div><div><div class="otx">Help & support</div><div class="ots">Guides and contact</div></div><div class="ock">›</div></div>
+    <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--asub);margin:16px 2px 9px">Appearance</div>
+    <div class="themepick">${tp('aurora')}${tp('blue')}${tp('bluedark')}</div>
+    <div class="opt danger" style="margin-top:14px" onclick="signOut()"><div class="oic">${I.lock}</div><div><div class="otx">Sign out</div><div class="ots">Return to login</div></div></div>
+  `);
+}
+function pickTheme(t){
+  curTheme=t;
+  document.getElementById('body').className='theme-'+t;
+  document.querySelectorAll('.themebtn').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('.themepick .tp').forEach((tp,i)=>tp.classList.toggle('sel',['aurora','blue','bluedark'][i]===t));
+  // recolor SVG charts (no DOM rebuild)
+  const cur=document.querySelector('.scr.show');
+  if(cur){paint(cur.id.replace('s-',''));}
+  // close the profile sheet so the app (and tab bar) is immediately usable
+  closeSheet();
+  flash(THEME_LABEL[t]+' theme applied.');
+}
+function signOut(){closeSheet();setTimeout(()=>nav('login'),200);}
+
+/* date / member pickers */
+function openPicker(kind){
+  if(kind==='date'){
+    const dates=['15 Jun 2026','16 Jun 2026','17 Jun 2026','18 Jun 2026','Custom range…'];
+    openSheet('<h3>Select date</h3><div class="sub">Choose the reporting day</div>'+
+      dates.map(d=>`<div class="opt ${d==='17 Jun 2026'?'sel':''}" onclick="pickDate('${d}')"><div class="oic">${I.plan}</div><div><div class="otx">${d}</div></div><div class="ock">✓</div></div>`).join(''));
+  } else {
+    const team=[['Gohar Zaman','004324'],['Raheel Zafar','004200'],['Zia Muhammad','004196'],['Imran Zafar','004291'],['Whole team','All reps']];
+    openSheet('<h3>Select team member</h3><div class="sub">Filter the report by rep</div>'+
+      team.map(m=>`<div class="opt ${m[1]==='004324'?'sel':''}" onclick="pickMember('${m[0]}','${m[1]}')"><div class="oic">${I.user2}</div><div><div class="otx">${m[0]}</div><div class="ots">${m[1]}</div></div><div class="ock">✓</div></div>`).join(''));
+  }
+}
+function pickDate(d){closeSheet();const f=document.querySelector('#s-report .field .fv');if(f)f.innerHTML=d+' <span class="x">▾</span>';flash('Date set to '+d+'.');}
+function pickMember(n,c){closeSheet();const fields=document.querySelectorAll('#s-report .field .fv');if(fields[1])fields[1].innerHTML=n+' · '+c+' <span class="x">▾</span>';flash('Showing report for '+n+'.');}
+
+/* add visit */
+function openAddVisit(){
+  const docs=[['Dr. Anwar Sheikh','Cardiologist'],['Dr. Saleem Raza','GP'],['Dr. Hassan Ali','Physician'],['Dr. Maria Khan','Pediatrician'],['+ New doctor','Add to list']];
+  openSheet('<h3>Log a visit</h3><div class="sub">Pick a doctor to record today\u2019s call</div>'+
+    docs.map(d=>`<div class="opt" onclick="addVisit('${d[0]}')"><div class="oic">${I.badge}</div><div><div class="otx">${d[0]}</div><div class="ots">${d[1]}</div></div><div class="ock" style="opacity:1">＋</div></div>`).join(''));
+}
+function addVisit(n){closeSheet();flash(n.startsWith('+')?'New doctor form opened.':'Visit logged for '+n+'.');}
+
+/* export / download */
+function doExport(){
+  openSheet('<h3>Export report</h3><div class="sub">Activity Details · 17 Jun 2026</div>'+
+    [['PDF document','.pdf','pdf'],['Excel spreadsheet','.xlsx','xls'],['Share link','copy link','link']].map(o=>
+      `<div class="opt" onclick="downloadReport('${o[2]}','${o[0]}')"><div class="oic">${I.doc}</div><div><div class="otx">${o[0]}</div><div class="ots">${o[1]}</div></div><div class="ock" style="opacity:1">↓</div></div>`).join(''));
+}
+function downloadReport(type,label){
+  closeSheet();
+  if(type==='link'){flash('Shareable link copied to clipboard.');return;}
+  // generate a real downloadable file so the button truly works
+  let content,fname,mime;
+  const rows=[['Time','Doctor','Type','Status'],['09:20','Dr. Anwar','Planned','Done'],['10:05','Dr. Saleem','Planned','Done'],['11:30','Dr. Iqbal','Unplanned','Logged'],['12:45','Dr. Rana','Planned','Missed']];
+  if(type==='xls'){content=rows.map(r=>r.join(',')).join('\n');fname='eWay_Activity_17Jun2026.csv';mime='text/csv';}
+  else{content='eWay — Activity Details\nGohar Zaman · 004324 · 17 Jun 2026\n\n'+rows.map(r=>r.join('   ')).join('\n')+'\n\nCoverage: 6 of 8 planned (75%)';fname='eWay_Activity_17Jun2026.txt';mime='text/plain';}
+  try{const blob=new Blob([content],{type:mime});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},500);
+    flash(label+' downloaded.');}
+  catch(e){flash(label+' ready to download.');}
+}
+function toggleRemember(el){const on=el.textContent.startsWith('☑');el.textContent=(on?'☐':'☑')+' Remember me';}
+
+/* theme switch: re-skin live and repaint current screen's canvas-drawn bits */
+function setTheme(t,btn){curTheme=t;document.getElementById('body').className='theme-'+t;
+  document.querySelectorAll('.themebtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.querySelectorAll('.themepick .tp').forEach((tp,i)=>tp.classList.toggle('sel',['aurora','blue','bluedark'][i]===t));
+  const cur=document.querySelector('.scr.show');if(cur){paint(cur.id.replace('s-',''));}}
+
+/* init */
+const nr=document.getElementById('navrow');nr.innerHTML=ORDER.map(k=>`<button data-k="${k}" onclick="nav('${k}')">${SCREENS[k]}</button>`).join('');
+document.getElementById('vp').insertAdjacentHTML('afterbegin',loginScreen());
+document.getElementById('vp').insertAdjacentHTML('beforeend',tabbarHTML());
+nav('login');
+</script>
+</body>
+</html>

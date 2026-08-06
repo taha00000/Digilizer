@@ -1,0 +1,28 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# NOTE: pubspec.lock IS committed. This is an application, not a package —
+# locking versions keeps CI and every machine on the same dependency set.
+
+# Generated (re-created by `dart run build_runner build`)
+*.g.dart
+*.freezed.dart
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / env
+*.env
+key.properties
+**/google-services.json
+**/GoogleService-Info.plist

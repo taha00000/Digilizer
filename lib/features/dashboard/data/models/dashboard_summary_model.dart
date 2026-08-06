@@ -1,0 +1,101 @@
+import '../../domain/entities/dashboard_summary.dart';
+
+/// Data-layer model for the dashboard payload. It extends the domain entity,
+/// so the mapping to the domain layer is free while JSON parsing stays out of
+/// `domain/` entirely.
+///
+/// TODO(real-api): the keys below mirror the PROVISIONAL shape taken from the
+/// approved prototype, NOT the client's API. When their data structure lands,
+/// remap [fromJson] here — no widget, provider or use-case changes.
+class DashboardSummaryModel extends DashboardSummary {
+  const DashboardSummaryModel({
+    required super.achievementPct,
+    required super.salesLabel,
+    required super.targetLabel,
+    required super.dayToDatePct,
+    required super.dayToDateSpark,
+    required super.coveragePct,
+    required super.coveredDoctors,
+    required super.totalDoctors,
+    required super.trendMonthly,
+    required super.trendQuarterly,
+    required super.salesMix,
+    required super.topBrands,
+    required super.calls,
+  });
+
+  factory DashboardSummaryModel.fromJson(Map<String, dynamic> json) {
+    return DashboardSummaryModel(
+      achievementPct: _int(json['achievementPct']),
+      salesLabel: json['salesLabel']?.toString() ?? '—',
+      targetLabel: json['targetLabel']?.toString() ?? '—',
+      dayToDatePct: _int(json['dayToDatePct']),
+      dayToDateSpark: _list(json['dayToDateSpark'])
+          .map((e) => _double(e))
+          .toList(growable: false),
+      coveragePct: _int(json['coveragePct']),
+      coveredDoctors: _int(json['coveredDoctors']),
+      totalDoctors: _int(json['totalDoctors']),
+      trendMonthly: _list(json['trendMonthly']).map(_trend).toList(),
+      trendQuarterly: _list(json['trendQuarterly']).map(_trend).toList(),
+      salesMix: _list(json['salesMix']).map(_slice).toList(),
+      topBrands: _list(json['topBrands']).map(_brand).toList(),
+      calls: _calls(json['calls']),
+    );
+  }
+
+  // --- defensive primitives: the API shape is unconfirmed, so never let a
+  // missing or oddly-typed field crash the dashboard. ---
+
+  static List<dynamic> _list(dynamic v) => v is List ? v : const [];
+
+  static int _int(dynamic v) => switch (v) {
+        int i => i,
+        num n => n.round(),
+        String s => int.tryParse(s) ?? 0,
+        _ => 0,
+      };
+
+  static double _double(dynamic v) => switch (v) {
+        double d => d,
+        num n => n.toDouble(),
+        String s => double.tryParse(s) ?? 0,
+        _ => 0,
+      };
+
+  static Map<String, dynamic> _map(dynamic v) =>
+      v is Map<String, dynamic> ? v : const {};
+
+  static TrendPoint _trend(dynamic v) {
+    final m = _map(v);
+    return TrendPoint(m['label']?.toString() ?? '', _double(m['value']));
+  }
+
+  static SalesMixSlice _slice(dynamic v) {
+    final m = _map(v);
+    return SalesMixSlice(
+      m['name']?.toString() ?? '',
+      _double(m['valueM']),
+      _int(m['pct']),
+    );
+  }
+
+  static BrandRow _brand(dynamic v) {
+    final m = _map(v);
+    return BrandRow(
+      m['name']?.toString() ?? '',
+      _double(m['salesM']),
+      _int(m['achPct']),
+      _int(m['golyPct']),
+    );
+  }
+
+  static CallsSummary _calls(dynamic v) {
+    final m = _map(v);
+    return CallsSummary(
+      plannedDone: _int(m['plannedDone']),
+      plannedTotal: _int(m['plannedTotal']),
+      totalDone: _int(m['totalDone']),
+    );
+  }
+}

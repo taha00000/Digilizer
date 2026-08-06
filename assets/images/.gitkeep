@@ -1,0 +1,3 @@
+# pubspec.yaml declares `assets/images/`, and Flutter fails `pub get` if the
+# directory is missing. Git does not track empty directories, so this file
+# keeps it present after a clone. Delete once real images live here.
