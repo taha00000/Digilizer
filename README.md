@@ -31,18 +31,22 @@ To see it without a simulator:
 flutter run -d chrome --dart-define=USE_MOCK=true
 ```
 
-### iOS device preview on a desktop
+### Running at phone size on a desktop
 
-`tool/device_preview.html` frames the web build in an iPhone bezel at true iOS
-logical dimensions (393×852 and friends), so the layout matches the device
-rather than a stretched desktop window:
+The Windows runner window is set to iPhone logical points (393×852) in
+`windows/runner/main.cpp`, so the desktop build lays out exactly as it will on
+device. Windows is a dev harness only — this app ships iOS-first.
 
 ```bash
-flutter build web --dart-define=USE_MOCK=true && cp tool/device_preview.html build/web/preview.html && python -m http.server 8777 --directory build/web
+flutter run -d windows --dart-define=USE_MOCK=true
 ```
 
-Then open `http://127.0.0.1:8777/preview.html`. Face ID is hidden in the
-browser — `local_auth` has no web sensor to report.
+> Requires the **C++ ATL** component in Visual Studio Build Tools —
+> `flutter_secure_storage_windows` needs `atlstr.h`. Without it the Windows
+> build fails at link time.
+
+Face ID is unavailable on desktop and web: `local_auth` has no sensor to
+report, so the button hides itself.
 
 Sign in with any non-empty company / username / password — the placeholder
 datasource accepts anything and returns the demo session.
