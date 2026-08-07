@@ -64,23 +64,31 @@ void main() {
     expect(find.text('total'), findsOneWidget);
   });
 
-  testWidgets('brand table sorts by name when the header is tapped',
+  testWidgets('brand table re-sorts when a column header is tapped',
       (tester) async {
+    const names = ['Vlep', 'Cubriva', 'Carlep', 'Seipil', 'Prixteen'];
+
+    List<String> brandOrder() => tester
+        .widgetList<Text>(find.byType(Text))
+        .map((w) => w.data)
+        .whereType<String>()
+        .where(names.contains)
+        .toList();
+
     await pumpDashboard(tester);
 
-    // Default sort is Sales descending → Vlep (8.8M) leads.
-    final firstBefore = tester
-        .widgetList<Text>(find.textContaining('M', findRichText: false))
-        .map((w) => w.data)
-        .toList();
-    expect(firstBefore, isNotEmpty);
+    // Default is Sales descending.
+    expect(brandOrder(), ['Vlep', 'Cubriva', 'Carlep', 'Seipil', 'Prixteen']);
 
-    await tester.tap(find.text('Brand'));
+    // Header labels are uppercased, matching `text-transform:uppercase`.
+    await tester.tap(find.text('BRAND'));
     await tester.pumpAndSettle();
+    expect(brandOrder(), ['Carlep', 'Cubriva', 'Prixteen', 'Seipil', 'Vlep']);
 
-    // Carlep sorts first alphabetically; assert it still renders after sorting.
-    expect(find.text('Carlep'), findsOneWidget);
-    expect(find.text('Vlep'), findsOneWidget);
+    // Tapping the same column again flips the direction.
+    await tester.tap(find.text('BRAND'));
+    await tester.pumpAndSettle();
+    expect(brandOrder(), ['Vlep', 'Seipil', 'Prixteen', 'Cubriva', 'Carlep']);
   });
 
   testWidgets('period pills render with every period available',

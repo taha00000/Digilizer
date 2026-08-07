@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eWay — iOS device preview</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --line:#26303c; --ink:#e6edf3; --muted:#8b949e; --accent:#22c3f5; }
+  * { box-sizing:border-box; margin:0; padding:0 }
+  body {
+    background:var(--bg); color:var(--ink); min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    display:flex; flex-direction:column; align-items:center; padding:28px 20px 48px;
+  }
+  h1 { font-size:19px; font-weight:800; letter-spacing:-.01em }
+  h1 span { color:var(--accent) }
+  p.sub { color:var(--muted); font-size:13px; margin-top:6px; text-align:center; max-width:620px; line-height:1.55 }
+
+  .controls { display:flex; gap:8px; margin:20px 0 8px; flex-wrap:wrap; justify-content:center }
+  .controls button {
+    font:inherit; font-size:12.5px; font-weight:600; color:var(--muted); cursor:pointer;
+    background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 15px;
+    transition:.15s;
+  }
+  .controls button:hover { border-color:var(--accent); color:var(--ink) }
+  .controls button.on { background:var(--accent); border-color:var(--accent); color:#04212b }
+
+  /* iPhone-style bezel. The inner frame is sized to true iOS logical points,
+     so the Flutter app lays out exactly as it will on device. */
+  .device {
+    position:relative; margin-top:22px; background:#04070c; padding:14px;
+    border-radius:58px; box-shadow:0 30px 70px rgba(0,0,0,.6), 0 0 0 2px #1b2531;
+    transition:width .25s, height .25s;
+  }
+  .notch {
+    position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:124px; height:30px; background:#04070c; border-radius:0 0 18px 18px; z-index:5;
+    pointer-events:none;
+  }
+  iframe { display:block; border:0; border-radius:44px; background:#000; }
+
+  .meta { color:var(--muted); font-size:12px; margin-top:16px; font-variant-numeric:tabular-nums }
+  .hint { color:var(--muted); font-size:12.5px; margin-top:10px; text-align:center; max-width:560px; line-height:1.6 }
+  .hint b { color:var(--ink); font-weight:600 }
+  code { background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-size:12px }
+</style>
+</head>
+<body>
+  <h1><span>eWay</span> — iOS device preview</h1>
+  <p class="sub">The real Flutter build running at true iOS logical dimensions. Everything is live: sign in, switch the Sales-mix views, sort the brand table, scroll to hide the tab bar, and open the avatar to change theme.</p>
+
+  <div class="controls" id="sizes"></div>
+
+  <div class="device" id="device">
+    <div class="notch"></div>
+    <iframe id="app" src="./index.html" title="eWay app"></iframe>
+  </div>
+
+  <div class="meta" id="meta"></div>
+  <p class="hint">
+    Sign in with any non-empty values — the placeholder datasource accepts anything.
+    Tap the <b>DS</b> avatar for the theme switcher.
+    Face ID is hidden here because browsers expose no biometric sensor to <code>local_auth</code>.
+  </p>
+
+<script>
+  // Logical (CSS) point sizes — what Flutter lays out against.
+  const DEVICES = [
+    { name: 'iPhone 15 / 16',     w: 393, h: 852 },
+    { name: 'iPhone 15 Pro Max',  w: 430, h: 932 },
+    { name: 'iPhone SE',          w: 375, h: 667 },
+    { name: 'iPad mini',          w: 744, h: 1133 },
+  ];
+
+  const device = document.getElementById('device');
+  const frame  = document.getElementById('app');
+  const meta   = document.getElementById('meta');
+  const sizes  = document.getElementById('sizes');
+
+  function apply(d, btn) {
+    // Scale down if the device is taller than the viewport so it always fits.
+    // Clamped: a short window makes `maxH` small or negative, which would
+    // otherwise produce a zero or mirrored (negative) transform.
+    const maxH = window.innerHeight - 260;
+    const scale = Math.max(0.4, Math.min(1, maxH / d.h));
+
+    frame.style.width  = d.w + 'px';
+    frame.style.height = d.h + 'px';
+    device.style.transform = 'scale(' + scale + ')';
+    device.style.transformOrigin = 'top center';
+    device.style.marginBottom = (d.h * (1 - scale)) + 'px';
+
+    meta.textContent = d.name + ' — ' + d.w + ' x ' + d.h + ' pt'
+      + (scale < 1 ? '  (shown at ' + Math.round(scale * 100) + '%)' : '');
+
+    document.querySelectorAll('#sizes button').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    current = d;
+  }
+
+  let current = DEVICES[0];
+  DEVICES.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.textContent = d.name;
+    b.onclick = () => apply(d, b);
+    sizes.appendChild(b);
+    if (i === 0) setTimeout(() => apply(d, b), 0);
+  });
+
+  window.addEventListener('resize', () => {
+    const active = document.querySelector('#sizes button.on');
+    if (active) apply(current, active);
+  });
+</script>
+</body>
+</html>

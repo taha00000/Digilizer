@@ -1,13 +1,24 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../domain/entities/dashboard_summary.dart';
 
-/// Sales trend bar chart. Tapping a bar selects it (the prototype's `.act`
-/// column) and surfaces the value; the 6M / 4Q toggle lives in the section
-/// header and is passed in via [points].
+/// The `.chartcard` trend chart.
+///
+/// Built by hand rather than with fl_chart: the prototype pins the bar to 74%
+/// of its column, colours the selected bar `--pri-d` against `--pri`, and
+/// floats a value tip above it. Matching that through a charting library's
+/// tooltip and sizing model costs more than drawing it directly.
+///
+/// ```css
+/// .chart{align-items:flex-end;gap:10px;height:140px;padding-top:18px}
+/// .col .stack{height:118px}
+/// .col .barfill{width:74%;border-radius:6px 6px 0 0;background:var(--pri)}
+/// .col.act .barfill{background:var(--pri-d)}
+/// .col .tip{top:-12px;font-size:10.5px;font-weight:800;color:var(--aink)}
+/// .col .xl{font-size:10.5px;color:var(--asub);font-weight:700}
+/// ```
 class TrendCard extends StatefulWidget {
   const TrendCard({super.key, required this.points});
 
@@ -18,12 +29,15 @@ class TrendCard extends StatefulWidget {
 }
 
 class _TrendCardState extends State<TrendCard> {
+  static const double _stackHeight = 118;
+  static const double _tipHeight = 16;
+
   int? _selected;
 
   @override
   void didUpdateWidget(TrendCard old) {
     super.didUpdateWidget(old);
-    // Switching 6M ↔ 4Q changes the series length; drop a stale selection.
+    // Switching 6M <-> 4Q changes the series length; drop a stale selection.
     if (old.points.length != widget.points.length) _selected = null;
   }
 
@@ -44,97 +58,73 @@ class _TrendCardState extends State<TrendCard> {
       );
     }
 
-    // Default the highlight to the most recent bar, as the prototype does.
+    // The prototype marks the most recent bar active by default.
     final active = _selected ?? points.length - 1;
     final maxValue = points.map((e) => e.value).reduce((a, b) => a > b ? a : b);
 
     return AppCard(
-      padding: const EdgeInsets.fromLTRB(12, 18, 12, 8),
-      child: SizedBox(
-        height: 178,
-        child: BarChart(
-          BarChartData(
-            maxY: maxValue * 1.25,
-            borderData: FlBorderData(show: false),
-            gridData: const FlGridData(show: false),
-            barTouchData: BarTouchData(
-              enabled: true,
-              touchTooltipData: BarTouchTooltipData(
-                getTooltipColor: (_) => t.ink,
-                tooltipRoundedRadius: 8,
-                getTooltipItem: (group, _, rod, __) => BarTooltipItem(
-                  '${rod.toY.toStringAsFixed(0)}M',
-                  TextStyle(
-                    color: t.canvas,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 11.5,
-                  ),
-                ),
-              ),
-              touchCallback: (event, response) {
-                if (!event.isInterestedForInteractions ||
-                    response?.spot == null) {
-                  return;
-                }
-                setState(() {
-                  _selected = response!.spot!.touchedBarGroupIndex;
-                });
-              },
-            ),
-            titlesData: FlTitlesData(
-              leftTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 26,
-                  getTitlesWidget: (v, _) {
-                    final i = v.toInt();
-                    if (i < 0 || i >= points.length) return const SizedBox();
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        points[i].label,
-                        style: TextStyle(
-                          color: i == active ? t.ink : t.sub,
-                          fontSize: 10.5,
-                          fontWeight:
-                              i == active ? FontWeight.w800 : FontWeight.w600,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          for (var i = 0; i < points.length; i++) ...[
+            if (i > 0) const SizedBox(width: 10),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selected = i),
+                behavior: HitTestBehavior.opaque,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: _tipHeight,
+                      child: i == active
+                          ? FittedBox(
+                              child: Text(
+                                '${points[i].value.toStringAsFixed(0)}M',
+                                style: TextStyle(
+                                  color: t.ink,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            )
+                          : null,
+                    ),
+                    SizedBox(
+                      height: _stackHeight,
+                      child: FractionallySizedBox(
+                        widthFactor: 0.74,
+                        heightFactor:
+                            (points[i].value / maxValue).clamp(0.02, 1.0),
+                        alignment: Alignment.bottomCenter,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 700),
+                          curve: Curves.easeOutCubic,
+                          decoration: BoxDecoration(
+                            color: i == active ? t.primaryDark : t.primary,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(6),
+                            ),
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            barGroups: [
-              for (var i = 0; i < points.length; i++)
-                BarChartGroupData(
-                  x: i,
-                  barRods: [
-                    BarChartRodData(
-                      toY: points[i].value,
-                      width: points.length > 5 ? 18 : 26,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(6),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: i == active
-                            ? t.gradient
-                            : [t.primarySoft, t.primarySoft],
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      points[i].label,
+                      style: TextStyle(
+                        color: t.sub,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
-            ],
-          ),
-        ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

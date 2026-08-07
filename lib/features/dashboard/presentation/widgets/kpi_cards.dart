@@ -5,13 +5,20 @@ import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/donut_gauge.dart';
 import '../../domain/entities/dashboard_summary.dart';
 
-/// The `Day to date` + `Coverage` pair. Both carry the inline micro-viz the
-/// prototype shows: a five-bar sparkline on the left card, a small ring on the
-/// right.
+/// The `.grid2` pair of `.mcard`s under the hero.
+///
+/// Left card carries the five-bar sparkline (`.mcard .bars`), right card the
+/// inline coverage ring (`.ring-inline`) with its two-line caption.
 class KpiCardRow extends StatelessWidget {
   const KpiCardRow({super.key, required this.summary});
 
   final DashboardSummary summary;
+
+  /// `.mcard .bars{height:36px}`
+  static const double _barsHeight = 36;
+
+  /// The coverage ring is `donut(..., 46, 7, '')` in the prototype.
+  static const double _ringSize = 46;
 
   @override
   Widget build(BuildContext context) {
@@ -21,33 +28,50 @@ class KpiCardRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: _KpiCard(
+            child: _MCard(
               label: 'Day to date',
               value: '${summary.dayToDatePct}%',
               delta: '▲ above target',
-              deltaColor: t.good,
-              trailing: _Sparkline(
-                values: summary.dayToDateSpark,
-                height: _KpiCard.trailingHeight,
+              // `.up{color:var(--pri)}` — cyan, not a semantic green.
+              deltaColor: t.primary,
+              trailing: SizedBox(
+                height: _barsHeight,
+                child: _Bars(values: summary.dayToDateSpark),
               ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: _KpiCard(
+            child: _MCard(
               label: 'Coverage',
               value: '${summary.coveragePct}%',
               delta: '${_thousands(summary.coveredDoctors)} / '
                   '${_thousands(summary.totalDoctors)}',
               deltaColor: t.sub,
-              trailing: Align(
-                alignment: Alignment.centerLeft,
-                child: DonutGauge.progress(
-                  percent: summary.coveragePct.toDouble(),
-                  color: t.primary,
-                  trackColor: t.primarySoft,
-                  size: 40,
-                  thickness: 5.5,
+              trailing: SizedBox(
+                height: _ringSize,
+                child: Row(
+                  children: [
+                    DonutGauge.progress(
+                      percent: summary.coveragePct.toDouble(),
+                      color: t.info,
+                      trackColor: t.infoSoft,
+                      size: _ringSize,
+                      thickness: 7,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'doctors\ncovered',
+                        style: TextStyle(
+                          color: t.sub,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          height: 1.25,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -68,8 +92,8 @@ class KpiCardRow extends StatelessWidget {
   }
 }
 
-class _KpiCard extends StatelessWidget {
-  const _KpiCard({
+class _MCard extends StatelessWidget {
+  const _MCard({
     required this.label,
     required this.value,
     required this.delta,
@@ -82,9 +106,6 @@ class _KpiCard extends StatelessWidget {
   final String delta;
   final Color deltaColor;
   final Widget trailing;
-
-  /// Height reserved for the inline micro-viz under each KPI value.
-  static const double trailingHeight = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +120,7 @@ class _KpiCard extends StatelessWidget {
               color: t.sub,
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
+              letterSpacing: 0.35, // .03em
             ),
           ),
           const SizedBox(height: 6),
@@ -108,35 +130,33 @@ class _KpiCard extends StatelessWidget {
               color: t.ink,
               fontSize: 22,
               fontWeight: FontWeight.w800,
+              letterSpacing: -0.44, // -.02em
             ),
           ),
           const SizedBox(height: 3),
           Text(
             delta,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: deltaColor,
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 10),
-          SizedBox(height: trailingHeight, child: trailing),
+          const SizedBox(height: 11),
+          trailing,
         ],
       ),
     );
   }
 }
 
-/// Five small bars; the last one is highlighted as the current period.
-///
-/// Heights are computed from [height] rather than a LayoutBuilder on purpose:
-/// this sits inside an [IntrinsicHeight], which cannot measure through a
-/// LayoutBuilder and throws during layout if one is present.
-class _Sparkline extends StatelessWidget {
-  const _Sparkline({required this.values, required this.height});
+/// `.mcard .bars` — equal-width bars filling the card, the last highlighted.
+class _Bars extends StatelessWidget {
+  const _Bars({required this.values});
 
   final List<double> values;
-  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -145,13 +165,19 @@ class _Sparkline extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         for (var i = 0; i < values.length; i++) ...[
-          if (i > 0) const SizedBox(width: 5),
-          Container(
-            width: 7,
-            height: (height * values[i].clamp(0.0, 1.0)).clamp(4.0, height),
-            decoration: BoxDecoration(
-              color: i == values.length - 1 ? t.primary : t.primarySoft,
-              borderRadius: BorderRadius.circular(3),
+          if (i > 0) const SizedBox(width: 4),
+          Expanded(
+            child: FractionallySizedBox(
+              heightFactor: values[i].clamp(0.05, 1.0),
+              alignment: Alignment.bottomCenter,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: i == values.length - 1 ? t.primary : t.primarySoft2,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(3),
+                  ),
+                ),
+              ),
             ),
           ),
         ],

@@ -11,9 +11,10 @@ void main() {
     await pumpApp(tester, const LoginScreen());
 
     expect(find.text('Sign in'), findsWidgets);
-    expect(find.text('Company'), findsOneWidget);
-    expect(find.text('Username'), findsOneWidget);
-    expect(find.text('Password'), findsOneWidget);
+    // `.linput .ll` is uppercased in CSS; we bake that into the label.
+    expect(find.text('COMPANY'), findsOneWidget);
+    expect(find.text('USERNAME'), findsOneWidget);
+    expect(find.text('PASSWORD'), findsOneWidget);
     expect(find.text('Remember me'), findsOneWidget);
     expect(find.text('Forgot password?'), findsOneWidget);
   });
@@ -49,19 +50,17 @@ void main() {
       (tester) async {
     await pumpApp(tester, const LoginScreen());
 
-    final company = tester.widget<TextField>(
-      find.ancestor(
-        of: find.text('Company'),
-        matching: find.byType(TextField),
-      ),
-    );
-    expect(company.controller?.text, 'HILAL');
+    // find.text also matches EditableText, so this asserts on field values.
+    expect(find.text('HILAL'), findsOneWidget);
+    expect(find.text('demo.support'), findsOneWidget);
   });
 
-  testWidgets('rejects an empty password with an inline message',
+  testWidgets('rejects a blanked-out field with an inline message',
       (tester) async {
     await pumpApp(tester, const LoginScreen());
 
+    // Clear the username (index 1: company, username, password).
+    await tester.enterText(find.byType(TextField).at(1), '');
     await tester.tap(find.text('Sign in').last);
     await tester.pumpAndSettle();
 
@@ -75,5 +74,18 @@ void main() {
     await tester.tap(find.text('Remember me'));
     await tester.pump();
     expect(find.byIcon(Icons.check_box_outline_blank_rounded), findsOneWidget);
+  });
+
+  testWidgets('password is obscured until the reveal toggle is tapped',
+      (tester) async {
+    await pumpApp(tester, const LoginScreen());
+
+    TextField passwordField() =>
+        tester.widget<TextField>(find.byType(TextField).at(2));
+
+    expect(passwordField().obscureText, isTrue);
+    await tester.tap(find.byIcon(Icons.visibility_outlined));
+    await tester.pump();
+    expect(passwordField().obscureText, isFalse);
   });
 }

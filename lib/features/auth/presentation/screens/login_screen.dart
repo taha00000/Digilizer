@@ -5,9 +5,17 @@ import '../../../../core/services/prefs.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_providers.dart';
 
-/// Login screen — mirrors eWay_Interactive_Prototype_FINAL.html:
-/// gradient backdrop, DIGILYZR wordmark, company/username/password fields,
-/// primary "Sign in" and a Face ID unlock affordance.
+/// Login screen, matching `.login` in the prototype.
+///
+/// The backdrop is per-theme and is NOT the brand gradient — Aurora's login is
+/// deep navy with cyan/violet radial glows:
+///
+/// ```css
+/// .login{background:
+///   radial-gradient(130% 80% at 80% 0%,  var(--loginglow1), transparent 55%),
+///   radial-gradient(120% 80% at 0% 30%,  var(--loginglow2), transparent 55%),
+///   var(--logingrad)}
+/// ```
 ///
 /// Navigation is NOT done here: a successful sign-in publishes the session and
 /// the router's guard redirects to /dashboard (see core/router/app_router.dart).
@@ -25,8 +33,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   late final TextEditingController _company;
   late final TextEditingController _username;
-  final _password = TextEditingController();
-  final _passwordFocus = FocusNode();
+  final _password = TextEditingController(text: 'demo1234');
 
   bool _remember = true;
   bool _obscure = true;
@@ -51,7 +58,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _company.dispose();
     _username.dispose();
     _password.dispose();
-    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -95,14 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: t.gradient,
-          ),
-        ),
+      body: _LoginBackdrop(
         child: SafeArea(
           bottom: false,
           child: LayoutBuilder(
@@ -110,44 +109,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Column(
-                  // Wordmark at the top, sheet flush to the bottom — the
-                  // prototype's login layout.
+                  // `.login .sheet{margin-top:auto}` pins the sheet down.
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
-                      children: [
-                        SizedBox(height: 46),
-                        Text(
-                          'DIGILYZR',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 4,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'eℓway · pharma SFA',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
-                        SizedBox(height: 18),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            'Field intelligence for medical reps\n'
-                            '& management teams.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12.5,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 34),
-                      ],
-                    ),
+                    const _LoginHead(),
                     _sheet(t, loading, showBiometrics),
                   ],
                 ),
@@ -180,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             'Sign in',
             style: TextStyle(
               color: t.ink,
-              fontSize: 20,
+              fontSize: 19,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -190,124 +155,130 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: TextStyle(color: t.sub, fontSize: 12.5),
           ),
           const SizedBox(height: 18),
-          _field(
-            t,
-            'Company',
-            _company,
-            icon: Icons.business_rounded,
+          _LInput(
+            icon: Icons.business_outlined,
+            label: 'Company',
+            controller: _company,
             textInputAction: TextInputAction.next,
           ),
-          _field(
-            t,
-            'Username',
-            _username,
-            icon: Icons.person_outline_rounded,
+          _LInput(
+            icon: Icons.person_outline,
+            label: 'Username',
+            controller: _username,
             textInputAction: TextInputAction.next,
           ),
-          _field(
-            t,
-            'Password',
-            _password,
-            icon: Icons.lock_outline_rounded,
+          _LInput(
+            icon: Icons.lock_outline,
+            label: 'Password',
+            controller: _password,
             obscure: _obscure,
-            focusNode: _passwordFocus,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _submit(),
-            suffix: IconButton(
-              icon: Icon(
+            trailing: GestureDetector(
+              onTap: () => setState(() => _obscure = !_obscure),
+              behavior: HitTestBehavior.opaque,
+              child: Icon(
                 _obscure
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 color: t.sub,
-                size: 19,
+                size: 18,
               ),
-              onPressed: () => setState(() => _obscure = !_obscure),
             ),
           ),
-          const SizedBox(height: 2),
-          Row(
-            children: [
-              Flexible(
-                child: GestureDetector(
-                  onTap: () => setState(() => _remember = !_remember),
-                  behavior: HitTestBehavior.opaque,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _remember
-                            ? Icons.check_box_rounded
-                            : Icons.check_box_outline_blank_rounded,
-                        size: 19,
-                        color: _remember ? t.primary : t.sub,
-                      ),
-                      const SizedBox(width: 7),
-                      Flexible(
-                        child: Text(
-                          'Remember me',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: t.sub,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
+          // .login .row{font-size:12px;margin:4px 0 16px}
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
+            child: Row(
+              children: [
+                Flexible(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _remember = !_remember),
+                    behavior: HitTestBehavior.opaque,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _remember
+                              ? Icons.check_box_rounded
+                              : Icons.check_box_outline_blank_rounded,
+                          size: 17,
+                          color: _remember ? t.primary : t.sub,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            'Remember me',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: t.sub,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Password reset arrives with the real API.',
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text('Reset link sent to your registered email.'),
                         ),
-                      ),
-                    );
-                },
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(0, 32),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  'Forgot password?',
-                  style: TextStyle(
-                    color: t.primary,
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
+                      );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Text(
+                    'Forgot password?',
+                    style: TextStyle(
+                      color: t.primaryDark,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 14),
-          _primaryButton(
+          _cta(
             t,
             loading ? 'Signing in…' : 'Sign in',
             loading ? null : _submit,
           ),
           if (showBiometrics) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Center(
-              child: TextButton.icon(
-                onPressed: loading
+              child: GestureDetector(
+                onTap: loading
                     ? null
                     : () =>
                         ref.read(authControllerProvider.notifier).biometric(),
-                icon: Icon(
-                  Icons.face_retouching_natural,
-                  color: t.primaryDark,
-                ),
-                label: Text(
-                  'Unlock with Face ID',
-                  style: TextStyle(color: t.sub, fontWeight: FontWeight.w700),
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.face_retouching_natural,
+                      color: t.primaryDark,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 9),
+                    Text(
+                      'Unlock with Face ID',
+                      style: TextStyle(
+                        color: t.sub,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -317,59 +288,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _field(
-    AppTokens t,
-    String label,
-    TextEditingController controller, {
-    required IconData icon,
-    bool obscure = false,
-    Widget? suffix,
-    FocusNode? focusNode,
-    TextInputAction? textInputAction,
-    ValueChanged<String>? onSubmitted,
-  }) {
-    OutlineInputBorder border(Color c) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: c),
-        );
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 11),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        obscureText: obscure,
-        textInputAction: textInputAction,
-        onSubmitted: onSubmitted,
-        autocorrect: false,
-        enableSuggestions: false,
-        style: TextStyle(color: t.ink, fontWeight: FontWeight.w700),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: t.sub, fontSize: 12),
-          prefixIcon: Icon(icon, color: t.sub, size: 19),
-          suffixIcon: suffix,
-          filled: true,
-          fillColor: t.canvas,
-          border: border(t.line),
-          enabledBorder: border(t.line),
-          focusedBorder: border(t.primary),
-        ),
-      ),
-    );
-  }
-
-  Widget _primaryButton(AppTokens t, String label, VoidCallback? onTap) {
+  /// `.cta` — brand gradient, white 14px/800, radius 15, glow shadow.
+  Widget _cta(AppTokens t, String label, VoidCallback? onTap) {
     return Opacity(
-      opacity: onTap == null ? 0.7 : 1,
+      opacity: onTap == null ? 0.75 : 1,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 15),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: t.gradient),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: t.gradient,
+              stops: const [0.0, 0.55, 1.0],
+            ),
             borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: t.shadow,
+                blurRadius: 24,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Text(
             label,
@@ -377,10 +319,189 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w800,
-              fontSize: 15,
+              fontSize: 14,
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Two radial glows layered over the per-theme `--logingrad`.
+class _LoginBackdrop extends StatelessWidget {
+  const _LoginBackdrop({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return DecoratedBox(
+      // linear-gradient(170deg, a, b 70%, c)
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: const Alignment(-0.17, -1),
+          end: const Alignment(0.17, 1),
+          colors: t.loginGradient,
+          stops: const [0.0, 0.7, 1.0],
+        ),
+      ),
+      child: DecoratedBox(
+        // at 0% 30%, extent 55%
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(-1, -0.4),
+            radius: 1.2,
+            colors: [t.loginGlow2, t.loginGlow2.withValues(alpha: 0)],
+            stops: const [0.0, 0.55],
+          ),
+        ),
+        child: DecoratedBox(
+          // at 80% 0%, extent 55%
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: const Alignment(0.6, -1),
+              radius: 1.3,
+              colors: [t.loginGlow1, t.loginGlow1.withValues(alpha: 0)],
+              stops: const [0.0, 0.55],
+            ),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// `.login .lhead` — wordmark, product line, and the positioning tagline.
+class _LoginHead extends StatelessWidget {
+  const _LoginHead();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(30, 60, 30, 0),
+      child: Column(
+        children: [
+          Text(
+            'DIGILYZR',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 3.96, // .18em
+            ),
+          ),
+          SizedBox(height: 3),
+          Text(
+            'eℓway · pharma SFA',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6, // .05em
+            ),
+          ),
+          SizedBox(height: 14),
+          Text(
+            'Field intelligence for medical reps\n& management teams.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              height: 1.5,
+            ),
+          ),
+          SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+}
+
+/// `.linput` — canvas-filled row with a leading glyph and a stacked
+/// uppercase label above the value. Deliberately not a Material TextField:
+/// the prototype's label sits above the value permanently rather than
+/// floating on focus.
+class _LInput extends StatelessWidget {
+  const _LInput({
+    required this.icon,
+    required this.label,
+    required this.controller,
+    this.obscure = false,
+    this.trailing,
+    this.textInputAction,
+    this.onSubmitted,
+  });
+
+  final IconData icon;
+  final String label;
+  final TextEditingController controller;
+  final bool obscure;
+  final Widget? trailing;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      decoration: BoxDecoration(
+        color: t.canvas,
+        border: Border.all(color: t.line),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: t.sub),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label.toUpperCase(),
+                  style: TextStyle(
+                    color: t.sub,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.4, // .04em
+                  ),
+                ),
+                const SizedBox(height: 2),
+                TextField(
+                  controller: controller,
+                  obscureText: obscure,
+                  textInputAction: textInputAction,
+                  onSubmitted: onSubmitted,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  cursorColor: t.primary,
+                  style: TextStyle(
+                    color: t.ink,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (trailing != null) ...[
+            const SizedBox(width: 8),
+            trailing!,
+          ],
+        ],
       ),
     );
   }

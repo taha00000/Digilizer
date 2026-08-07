@@ -26,10 +26,13 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
+    // .badge.g{background:var(--pri-soft);color:var(--pri-d)}
+    // .badge.a{background:var(--warn-soft);color:var(--warn-tx)}
+    // .badge.r{background:var(--rose-soft);color:var(--rose-tx)}
     final (bg, fg) = switch (tone) {
       BadgeTone.good => (t.primarySoft, t.primaryDark),
-      BadgeTone.warn => (t.warnSoft, t.warn),
-      BadgeTone.bad => (t.roseSoft, t.rose),
+      BadgeTone.warn => (t.warnSoft, t.warnText),
+      BadgeTone.bad => (t.roseSoft, t.roseText),
     };
 
     return Container(

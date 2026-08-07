@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/session/session_controller.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../shared/widgets/app_background.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/bottom_tab_bar.dart';
 import '../../../../shared/widgets/pill_row.dart';
@@ -69,57 +70,59 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: t.canvas,
-      body: SafeArea(
-        bottom: false,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                _Header(
-                  greeting: 'Good morning',
-                  subtitle: session == null
-                      ? '—'
-                      : '${session.displayName.split(' ').first} · '
-                          '${session.company} · ACC ${session.accountCode}',
-                  initials: session?.initials ?? '?',
-                  onAvatarTap: _openProfile,
-                ),
-                Expanded(
-                  child: async.when(
-                    loading: () => const _DashboardSkeleton(),
-                    error: (e, _) => _ErrorState(
-                      message: '$e'.replaceFirst('Exception: ', ''),
-                      onRetry: _refresh,
-                    ),
-                    data: (summary) => RefreshIndicator(
-                      onRefresh: _refresh,
-                      color: t.primary,
-                      backgroundColor: t.surface,
-                      child: _body(summary),
+      body: AppBackground(
+        child: SafeArea(
+          bottom: false,
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  _Header(
+                    greeting: 'Good morning',
+                    subtitle: session == null
+                        ? '—'
+                        : '${session.displayName.split(' ').first} · '
+                            '${session.company} · ACC ${session.accountCode}',
+                    initials: session?.initials ?? '?',
+                    onAvatarTap: _openProfile,
+                  ),
+                  Expanded(
+                    child: async.when(
+                      loading: () => const _DashboardSkeleton(),
+                      error: (e, _) => _ErrorState(
+                        message: '$e'.replaceFirst('Exception: ', ''),
+                        onRetry: _refresh,
+                      ),
+                      data: (summary) => RefreshIndicator(
+                        onRefresh: _refresh,
+                        color: t.primary,
+                        backgroundColor: t.surface,
+                        child: _body(summary),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: AnimatedBuilder(
-                animation: _hideOnScroll,
-                builder: (context, _) => BottomTabBar(
-                  current: AppTab.home,
-                  visible: _hideOnScroll.visible,
-                  onTabSelected: (tab) {
-                    if (tab == AppTab.home) return;
-                    _comingSoon('${tab.label} arrives in a later phase.');
-                  },
-                  onFabPressed: () =>
-                      _comingSoon('Call reporting arrives in a later phase.'),
+                ],
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: AnimatedBuilder(
+                  animation: _hideOnScroll,
+                  builder: (context, _) => BottomTabBar(
+                    current: AppTab.home,
+                    visible: _hideOnScroll.visible,
+                    onTabSelected: (tab) {
+                      if (tab == AppTab.home) return;
+                      _comingSoon('${tab.label} arrives in a later phase.');
+                    },
+                    onFabPressed: () =>
+                        _comingSoon('Call reporting arrives in a later phase.'),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -180,7 +183,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           "Today's calls",
           trailing: SectionLink(
             'Open',
-            onTap: () => _comingSoon('Call reporting arrives in a later phase.'),
+            onTap: () =>
+                _comingSoon('Call reporting arrives in a later phase.'),
           ),
         ),
         _CallsRow(calls: s.calls),
@@ -297,7 +301,9 @@ class _CallsRow extends StatelessWidget {
                   Text(
                     '${calls.planCompletionPct}% of plan',
                     style: TextStyle(
-                      color: t.good,
+                      // .up{color:var(--pri)} — the prototype uses the brand
+                      // cyan for positive deltas, not a semantic green.
+                      color: t.primary,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700,
                     ),
@@ -333,7 +339,9 @@ class _CallsRow extends StatelessWidget {
                   Text(
                     '▲ +${calls.unplanned} unplanned',
                     style: TextStyle(
-                      color: t.good,
+                      // .up{color:var(--pri)} — the prototype uses the brand
+                      // cyan for positive deltas, not a semantic green.
+                      color: t.primary,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700,
                     ),

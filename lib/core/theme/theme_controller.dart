@@ -16,7 +16,8 @@ class ThemeController extends StateNotifier<AppThemeId> {
     final name = prefs.getString(_key);
     return AppThemeId.values.firstWhere(
       (e) => e.name == name,
-      orElse: () => AppThemeId.aurora, // Aurora is the default (client-approved)
+      orElse: () =>
+          AppThemeId.aurora, // Aurora is the default (client-approved)
     );
   }
 

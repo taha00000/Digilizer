@@ -56,9 +56,10 @@ class SectionLink extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
         child: Text(
+          // .sectitle a{font-size:12.5px;color:var(--pri-d);font-weight:700}
           '$label ›',
           style: TextStyle(
-            color: t.primary,
+            color: t.primaryDark,
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
           ),

@@ -31,8 +31,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
       DioExceptionType.sendTimeout ||
       DioExceptionType.connectionError =>
         const NetworkFailure(),
-      DioExceptionType.badResponse =>
-        e.response?.statusCode == 401 ? const AuthFailure() : const ServerFailure(),
+      DioExceptionType.badResponse => e.response?.statusCode == 401
+          ? const AuthFailure()
+          : const ServerFailure(),
       _ => const ServerFailure(),
     };
   }

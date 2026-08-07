@@ -31,6 +31,19 @@ To see it without a simulator:
 flutter run -d chrome --dart-define=USE_MOCK=true
 ```
 
+### iOS device preview on a desktop
+
+`tool/device_preview.html` frames the web build in an iPhone bezel at true iOS
+logical dimensions (393×852 and friends), so the layout matches the device
+rather than a stretched desktop window:
+
+```bash
+flutter build web --dart-define=USE_MOCK=true && cp tool/device_preview.html build/web/preview.html && python -m http.server 8777 --directory build/web
+```
+
+Then open `http://127.0.0.1:8777/preview.html`. Face ID is hidden in the
+browser — `local_auth` has no web sensor to report.
+
 Sign in with any non-empty company / username / password — the placeholder
 datasource accepts anything and returns the demo session.
 
@@ -103,6 +116,20 @@ Three approved themes (Aurora, Company Blue, Blue Dark) live as `AppTokens`,
 a `ThemeExtension`. Widgets read `context.tokens.primary` — **never** a
 hard-coded `Color`. That is what lets the app re-skin live from the profile
 sheet.
+
+Every token is transcribed from the CSS custom properties in
+`docs/eWay_Interactive_Prototype_FINAL.html`, and the Dart field names mirror
+the CSS names (`--pri-soft2` → `primarySoft2`) so the two can be diffed by eye.
+Widgets carry the source CSS rule in a doc comment. Things that are easy to get
+wrong and are deliberate:
+
+- The **login backdrop is per-theme and is not the brand gradient** — Aurora's
+  is deep navy (`--logingrad`) under two radial glows.
+- The whole app sits on `AppBackground`, which layers `--glow1`/`--glow2` over
+  `--canvasgrad`. Without it the dark themes read as flat black.
+- Positive deltas use `--pri` (`.up`), not a semantic green.
+- There are **two** segmented-control looks: `.seg` (raised surface chip) and
+  `.mixhead .seg` (solid brand chip). See `SegStyle`.
 
 **Inter is bundled, not fetched.** `assets/google_fonts/` holds the five
 weights the design uses, and `main()` sets

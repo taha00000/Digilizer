@@ -92,6 +92,9 @@ class DonutGauge extends StatelessWidget {
               ],
             ),
           ),
+          // Centre type matches the prototype's donut() helper: the value at
+          // `size * 0.19` weight 800 in --aink, the caption at a fixed 9px
+          // weight 700 in --asub.
           if (centerLabel != null || centerCaption != null)
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -101,7 +104,7 @@ class DonutGauge extends StatelessWidget {
                     centerLabel!,
                     style: TextStyle(
                       color: t.ink,
-                      fontSize: centerLabelSize ?? size * 0.21,
+                      fontSize: centerLabelSize ?? size * 0.19,
                       fontWeight: FontWeight.w800,
                       height: 1.1,
                     ),
@@ -111,7 +114,7 @@ class DonutGauge extends StatelessWidget {
                     centerCaption!,
                     style: TextStyle(
                       color: t.sub,
-                      fontSize: size * 0.10,
+                      fontSize: 9,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.4,
                     ),

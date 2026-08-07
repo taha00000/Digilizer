@@ -29,7 +29,9 @@ class _SalesMixCardState extends State<SalesMixCard> {
     final totalLabel = '${total.toStringAsFixed(1)}M';
 
     return AppCard(
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 17),
+      // .mixcard{border-radius:22px;padding:16px}
+      radius: 22,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -49,6 +51,8 @@ class _SalesMixCardState extends State<SalesMixCard> {
               ),
               const SizedBox(width: 10),
               SegControl(
+                // .mixhead .seg — solid --pri chip, outlined tray.
+                style: SegStyle.brand,
                 labels: const ['Donut', 'Bars', 'Share'],
                 selectedIndex: _view,
                 onChanged: (i) => setState(() => _view = i),

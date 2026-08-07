@@ -10,8 +10,10 @@ class AppConfig {
       bool.fromEnvironment('USE_MOCK', defaultValue: true);
 
   /// Base URL for the real eWay API (fill in once provided by the client).
-  static const String apiBaseUrl =
-      String.fromEnvironment('API_BASE_URL', defaultValue: 'https://api.example.com');
+  static const String apiBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://api.example.com',
+  );
 
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 20);

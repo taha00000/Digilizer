@@ -9,11 +9,15 @@ class AppCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(15),
+    this.radius = 20,
     this.onTap,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
+
+  /// `.mcard`/`.chartcard` use 20px; `.mixcard` uses 22px.
+  final double radius;
   final VoidCallback? onTap;
 
   @override
@@ -24,7 +28,7 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: t.surface,
         border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(radius),
       ),
       child: child,
     );
@@ -32,7 +36,7 @@ class AppCard extends StatelessWidget {
     if (onTap == null) return card;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(radius),
       child: card,
     );
   }
