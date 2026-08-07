@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/prefs.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../shared/widgets/radial_glow.dart';
 import '../providers/auth_providers.dart';
 
 /// Login screen, matching `.login` in the prototype.
@@ -348,23 +349,27 @@ class _LoginBackdrop extends StatelessWidget {
         ),
       ),
       child: DecoratedBox(
-        // at 0% 30%, extent 55%
+        // radial-gradient(120% 80% at 0% 30%, --loginglow2, transparent 55%)
         decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: const Alignment(-1, -0.4),
-            radius: 1.2,
-            colors: [t.loginGlow2, t.loginGlow2.withValues(alpha: 0)],
-            stops: const [0.0, 0.55],
+          gradient: cssRadialGlow(
+            color: t.loginGlow2,
+            widthPct: 120,
+            heightPct: 80,
+            atXPct: 0,
+            atYPct: 30,
+            stopPct: 55,
           ),
         ),
         child: DecoratedBox(
-          // at 80% 0%, extent 55%
+          // radial-gradient(130% 80% at 80% 0%, --loginglow1, transparent 55%)
           decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: const Alignment(0.6, -1),
-              radius: 1.3,
-              colors: [t.loginGlow1, t.loginGlow1.withValues(alpha: 0)],
-              stops: const [0.0, 0.55],
+            gradient: cssRadialGlow(
+              color: t.loginGlow1,
+              widthPct: 130,
+              heightPct: 80,
+              atXPct: 80,
+              atYPct: 0,
+              stopPct: 55,
             ),
           ),
           child: child,

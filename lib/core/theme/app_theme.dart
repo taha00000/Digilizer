@@ -39,6 +39,8 @@ class AppTokens extends ThemeExtension<AppTokens> {
   // --- semantic ---
   final Color info; // --info
   final Color infoSoft; // --info-soft
+  final Color lav; // --lav
+  final Color lavSoft; // --lav-soft
   final Color warn; // --warn
   final Color warnSoft; // --warn-soft
   final Color warnText; // --warn-tx
@@ -87,6 +89,8 @@ class AppTokens extends ThemeExtension<AppTokens> {
     required this.eyebrow,
     required this.info,
     required this.infoSoft,
+    required this.lav,
+    required this.lavSoft,
     required this.warn,
     required this.warnSoft,
     required this.warnText,
@@ -125,6 +129,8 @@ class AppTokens extends ThemeExtension<AppTokens> {
     Color? eyebrow,
     Color? info,
     Color? infoSoft,
+    Color? lav,
+    Color? lavSoft,
     Color? warn,
     Color? warnSoft,
     Color? warnText,
@@ -158,6 +164,8 @@ class AppTokens extends ThemeExtension<AppTokens> {
       eyebrow: eyebrow ?? this.eyebrow,
       info: info ?? this.info,
       infoSoft: infoSoft ?? this.infoSoft,
+      lav: lav ?? this.lav,
+      lavSoft: lavSoft ?? this.lavSoft,
       warn: warn ?? this.warn,
       warnSoft: warnSoft ?? this.warnSoft,
       warnText: warnText ?? this.warnText,
@@ -197,6 +205,8 @@ class AppTokens extends ThemeExtension<AppTokens> {
       eyebrow: c(eyebrow, other.eyebrow),
       info: c(info, other.info),
       infoSoft: c(infoSoft, other.infoSoft),
+      lav: c(lav, other.lav),
+      lavSoft: c(lavSoft, other.lavSoft),
       warn: c(warn, other.warn),
       warnSoft: c(warnSoft, other.warnSoft),
       warnText: c(warnText, other.warnText),
@@ -236,6 +246,8 @@ class AppTheme {
     eyebrow: Color(0xFF8FD9FF),
     info: Color(0xFF7C8CFF),
     infoSoft: Color(0xFF1A2348),
+    lav: Color(0xFFA78BFF),
+    lavSoft: Color(0xFF221D4A),
     warn: Color(0xFFFFC24D),
     warnSoft: Color(0xFF352B16),
     warnText: Color(0xFFFFC24D),
@@ -287,6 +299,8 @@ class AppTheme {
     eyebrow: Color(0xFF0089BD),
     info: Color(0xFF5B6BFF),
     infoSoft: Color(0xFFEAECFF),
+    lav: Color(0xFF7A6CF0),
+    lavSoft: Color(0xFFEDEBFC),
     warn: Color(0xFFF0A500),
     warnSoft: Color(0xFFFDF3DA),
     warnText: Color(0xFFA87800),
@@ -338,6 +352,8 @@ class AppTheme {
     eyebrow: Color(0xFF7FDCFF),
     info: Color(0xFF5B9BFF),
     infoSoft: Color(0xFF13294A),
+    lav: Color(0xFF7A8CFF),
+    lavSoft: Color(0xFF1A2046),
     warn: Color(0xFFF3B53D),
     warnSoft: Color(0xFF352B16),
     warnText: Color(0xFFF3B53D),

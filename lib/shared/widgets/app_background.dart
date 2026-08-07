@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import 'radial_glow.dart';
 
 /// Reproduces the prototype's `.viewport` treatment:
 ///
@@ -37,23 +38,27 @@ class AppBackground extends StatelessWidget {
         ),
       ),
       child: DecoratedBox(
-        // glow 2 — at -10% 8%, extent 55%
+        // radial-gradient(120% 60% at -10% 8%, --glow2, transparent 55%)
         decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: const Alignment(-1.2, -0.84),
-            radius: 1.2,
-            colors: [t.glow2, t.glow2.withValues(alpha: 0)],
-            stops: const [0.0, 0.55],
+          gradient: cssRadialGlow(
+            color: t.glow2,
+            widthPct: 120,
+            heightPct: 60,
+            atXPct: -10,
+            atYPct: 8,
+            stopPct: 55,
           ),
         ),
         child: DecoratedBox(
-          // glow 1 — at 80% -5%, extent 60%
+          // radial-gradient(120% 70% at 80% -5%, --glow1, transparent 60%)
           decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: const Alignment(0.6, -1.1),
-              radius: 1.2,
-              colors: [t.glow1, t.glow1.withValues(alpha: 0)],
-              stops: const [0.0, 0.6],
+            gradient: cssRadialGlow(
+              color: t.glow1,
+              widthPct: 120,
+              heightPct: 70,
+              atXPct: 80,
+              atYPct: -5,
+              stopPct: 60,
             ),
           ),
           child: child,
