@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_config.dart';
+import '../../../../core/database/response_cache.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/dashboard_datasource.dart';
 import '../../data/datasources/dashboard_mock_datasource.dart';
@@ -17,7 +18,10 @@ final dashboardDataSourceProvider = Provider<DashboardDataSource>((ref) {
 });
 
 final dashboardRepositoryProvider = Provider<DashboardRepository>((ref) {
-  return DashboardRepositoryImpl(ref.watch(dashboardDataSourceProvider));
+  return DashboardRepositoryImpl(
+    ref.watch(dashboardDataSourceProvider),
+    ref.watch(responseCacheProvider),
+  );
 });
 
 final getDashboardSummaryProvider = Provider<GetDashboardSummary>((ref) {

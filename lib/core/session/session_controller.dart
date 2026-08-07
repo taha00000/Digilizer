@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../database/response_cache.dart';
 import '../services/token_store.dart';
 import 'app_session.dart';
 
@@ -34,11 +35,12 @@ final currentSessionProvider = Provider<AppSession?>(
 /// This is the single sign-out path in the app — do not add a second one in a
 /// feature, or the two will drift apart.
 ///
-/// TODO(real-api): also drop the Drift cache here once it exists, so the next
-/// user cannot see the previous user's data.
+/// Clearing the offline cache is part of signing out, not an afterthought:
+/// cached responses are another user's data once the session ends.
 final signOutProvider = Provider<Future<void> Function()>((ref) {
   return () async {
     await ref.read(tokenStoreProvider).clear();
+    await ref.read(responseCacheProvider).clear();
     ref.read(sessionControllerProvider.notifier).signOut();
   };
 });

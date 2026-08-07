@@ -154,8 +154,10 @@ or Chrome (`flutter run -d chrome`) for a quick look.
       `UnimplementedError` until the client's data structure arrives
 - [x] Model boundary added (`AuthSessionModel`, `DashboardSummaryModel`) with
       defensive `fromJson` — one file per feature to remap when the API lands
-- [ ] Drift database + offline cache read path (report §5) — deps are declared
-      in `pubspec.yaml`, implementation not started
+- [x] Drift database + offline cache read path (report §5). A single
+      `CachedResponses` key/JSON table; repositories write through on success
+      and fall back on network failure only. Sign-out clears it. Encryption
+      via sqlcipher is still to do.
 
 ### Task 5 — Tests
 - [x] Unit tests for the repositories and model parsing (fake datasources)

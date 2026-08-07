@@ -18,12 +18,16 @@ flutter pub get
 ```
 
 ```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+```bash
 flutter run --dart-define=USE_MOCK=true
 ```
 
-No codegen step is needed — the models are hand-written on purpose so the app
-builds straight after `pub get`. `build_runner` is already in `dev_dependencies`
-for when Freezed/Retrofit/Drift come in.
+The codegen step is required: Drift generates `lib/core/database/app_database.g.dart`,
+which is gitignored. Everything else is hand-written, so that one command is the
+whole of it.
 
 To see it without a simulator:
 
@@ -179,8 +183,26 @@ type deterministic offline.
 - Inter bundled for offline-deterministic type
 - 43 tests (unit + widget + golden), clean `flutter analyze`, web build verified
 
+### Offline-first
+
+`core/database/` holds a Drift database with a single `CachedResponses` table:
+logical request key → JSON payload → timestamp. Repositories write through on
+every success and fall back to the cached copy when the network is down, so a
+rep with no signal still sees the last good numbers.
+
+It is a key/value store of JSON rather than typed tables per screen on purpose
+— the client's data structure is unconfirmed, so typed columns would be
+rewritten the moment the real API lands, and the same `fromJson` that parses a
+live response parses the cached one.
+
+**Only network failures fall back.** A 500 or a 401 surfaces as an error:
+silently serving yesterday's numbers after a server error is worse than an
+honest error state. Sign-out clears the cache, since cached responses are
+another user's data once the session ends.
+
 **Next**
 
-- Drift database + the offline cache read path (deps are already declared)
 - Wire the period pills to the real request once the API defines scoping
-- Modules / Team / Reports / Call Reporting screens
+- Encrypt the cache with `sqlcipher_flutter_libs` before real customer data is
+  stored (dependency already listed; see the TODO in `app_database.dart`)
+- The prototype's Face ID scan overlay, add-visit sheet and report export

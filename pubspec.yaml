@@ -65,8 +65,12 @@ dev_dependencies:
   riverpod_generator: ^2.6.3
   freezed: ^2.5.7
   json_serializable: ^6.9.0
-  retrofit_generator: ^9.1.5
   drift_dev: ^2.20.3
+  # retrofit_generator is intentionally absent: the version that resolves
+  # against retrofit 4.9.2 fails to compile the build script, and nothing
+  # uses Retrofit annotations yet (the remote datasources are plain Dio).
+  # Add it back — with both versions pinned together — when the real API
+  # arrives and the Retrofit interfaces are written.
 
   # Testing
   mocktail: ^1.0.4

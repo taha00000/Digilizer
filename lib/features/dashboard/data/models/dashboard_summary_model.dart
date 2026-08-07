@@ -44,6 +44,47 @@ class DashboardSummaryModel extends DashboardSummary {
     );
   }
 
+  /// Serialised for the offline cache. Mirrors [fromJson] exactly — the same
+  /// parser has to read it back, so the two must be changed together when the
+  /// real API shape lands.
+  Map<String, dynamic> toJson() => {
+        'achievementPct': achievementPct,
+        'salesLabel': salesLabel,
+        'targetLabel': targetLabel,
+        'dayToDatePct': dayToDatePct,
+        'dayToDateSpark': dayToDateSpark,
+        'coveragePct': coveragePct,
+        'coveredDoctors': coveredDoctors,
+        'totalDoctors': totalDoctors,
+        'trendMonthly': trendMonthly.map(_trendJson).toList(),
+        'trendQuarterly': trendQuarterly.map(_trendJson).toList(),
+        'salesMix': salesMix.map(_sliceJson).toList(),
+        'topBrands': topBrands.map(_brandJson).toList(),
+        'calls': {
+          'plannedDone': calls.plannedDone,
+          'plannedTotal': calls.plannedTotal,
+          'totalDone': calls.totalDone,
+        },
+      };
+
+  static Map<String, dynamic> _trendJson(TrendPoint p) => {
+        'label': p.label,
+        'value': p.value,
+      };
+
+  static Map<String, dynamic> _sliceJson(SalesMixSlice s) => {
+        'name': s.name,
+        'valueM': s.valueM,
+        'pct': s.pct,
+      };
+
+  static Map<String, dynamic> _brandJson(BrandRow b) => {
+        'name': b.name,
+        'salesM': b.salesM,
+        'achPct': b.achPct,
+        'golyPct': b.golyPct,
+      };
+
   // --- defensive primitives: the API shape is unconfirmed, so never let a
   // missing or oddly-typed field crash the dashboard. ---
 

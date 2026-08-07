@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_config.dart';
+import '../../../../core/database/response_cache.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/calls_datasource.dart';
 import '../../data/datasources/calls_mock_datasource.dart';
@@ -16,7 +17,10 @@ final callsDataSourceProvider = Provider<CallsDataSource>((ref) {
 });
 
 final callsRepositoryProvider = Provider<CallsRepository>((ref) {
-  return CallsRepositoryImpl(ref.watch(callsDataSourceProvider));
+  return CallsRepositoryImpl(
+    ref.watch(callsDataSourceProvider),
+    ref.watch(responseCacheProvider),
+  );
 });
 
 /// Which customer type the pill row is filtered to.

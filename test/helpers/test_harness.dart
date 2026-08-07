@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:eway/core/services/biometric_service.dart';
 import 'package:eway/core/services/prefs.dart';
+import 'package:eway/core/database/response_cache.dart';
 import 'package:eway/core/services/token_store.dart';
 import 'package:eway/core/session/app_session.dart';
 import 'package:eway/core/session/session_controller.dart';
@@ -61,6 +62,9 @@ Future<void> pumpApp(
         biometricServiceProvider
             .overrideWithValue(biometrics ?? FakeBiometricService()),
         tokenStoreProvider.overrideWithValue(InMemoryTokenStore()),
+        // The real cache opens a Drift database via path_provider, which has
+        // no implementation in the test binding.
+        responseCacheProvider.overrideWithValue(const NoopResponseCache()),
         if (session != null)
           sessionControllerProvider.overrideWith(
             (ref) => SessionController()..signIn(session),
