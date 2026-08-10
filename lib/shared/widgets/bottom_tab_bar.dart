@@ -42,12 +42,17 @@ class BottomTabBar extends StatelessWidget {
     super.key,
     required this.current,
     required this.visible,
+    this.showTeam = true,
     this.onTabSelected,
     this.onFabPressed,
   });
 
   final AppTab current;
   final bool visible;
+
+  /// Field reps must not see the Team tab — it exposes colleagues' numbers.
+  /// The slot is kept (as an empty flex) so the FAB stays centred.
+  final bool showTeam;
   final ValueChanged<AppTab>? onTabSelected;
   final VoidCallback? onFabPressed;
 
@@ -89,7 +94,10 @@ class BottomTabBar extends StatelessWidget {
                         _tab(context, AppTab.modules),
                         // .fabtab — a fixed 54px gap the FAB floats over.
                         const SizedBox(width: 54),
-                        _tab(context, AppTab.team),
+                        if (showTeam)
+                          _tab(context, AppTab.team)
+                        else
+                          const Spacer(),
                         _tab(context, AppTab.reports),
                       ],
                     ),

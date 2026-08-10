@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Required by local_auth. Without this key iOS terminates the app the
+	     moment Face ID is invoked, and App Review rejects the binary. -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>eWay uses Face ID so you can unlock your workspace without typing your password.</string>
 </dict>
 </plist>

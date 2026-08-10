@@ -2,11 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:eway/core/session/app_session.dart';
 
-AppSession session(String name) => AppSession(
+AppSession session(String name, {UserRole role = UserRole.manager}) =>
+    AppSession(
       userId: 'u1',
       displayName: name,
       company: 'HILAL',
       accountCode: '999903',
+      role: role,
     );
 
 void main() {

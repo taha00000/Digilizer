@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:eway/core/session/app_session.dart';
 import 'package:eway/features/calls/presentation/screens/calls_screen.dart';
 import 'package:eway/features/modules/presentation/screens/modules_screen.dart';
 import 'package:eway/features/reports/presentation/screens/report_output_screen.dart';
@@ -132,5 +133,41 @@ void main() {
     expect(find.text('Visit summary'), findsOneWidget);
     expect(find.text('Dr. Anwar'), findsOneWidget);
     expect(find.text('75%'), findsOneWidget); // completion
+  });
+
+  group('role gating', () {
+    Future<void> pumpAs(WidgetTester tester, AppSession session) async {
+      tester.view.physicalSize = const Size(400, 2600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await pumpApp(tester, const ModulesScreen(), session: session);
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a manager sees the Team tab and team modules', (tester) async {
+      await pumpAs(tester, demoSession);
+
+      expect(find.text('Team'), findsOneWidget); // bottom tab
+      expect(find.text('My Team · ZSM (10)'), findsOneWidget);
+      expect(find.text('Brick Analysis'), findsOneWidget);
+      expect(find.text('Field Force HR'), findsOneWidget);
+    });
+
+    testWidgets('a rep sees none of it', (tester) async {
+      await pumpAs(tester, repSession);
+
+      expect(find.text('Team'), findsNothing);
+      expect(find.text('My Team · ZSM (10)'), findsNothing);
+      expect(find.text('Brick Analysis'), findsNothing);
+      expect(find.text('Field Force HR'), findsNothing);
+
+      // Their own work is untouched.
+      expect(find.text('Call Reporting'), findsOneWidget);
+      expect(find.text('Extra Discount'), findsOneWidget);
+      expect(find.text('Reports'), findsOneWidget);
+    });
   });
 }

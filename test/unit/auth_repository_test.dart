@@ -4,6 +4,7 @@ import 'package:eway/core/error/failures.dart';
 import 'package:eway/core/services/biometric_service.dart';
 import 'package:eway/core/services/token_store.dart';
 import 'package:eway/features/auth/data/datasources/auth_datasource.dart';
+import 'package:eway/features/auth/domain/entities/auth_session.dart';
 import 'package:eway/features/auth/data/models/auth_session_model.dart';
 import 'package:eway/features/auth/data/repositories/auth_repository_impl.dart';
 
@@ -13,6 +14,7 @@ const _model = AuthSessionModel(
   company: 'HILAL',
   accountCode: '999903',
   token: 'mock-jwt-token',
+  role: AuthRole.manager,
 );
 
 class _FakeDataSource implements AuthDataSource {

@@ -131,6 +131,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                   builder: (context, _) => BottomTabBar(
                     current: widget.tab,
                     visible: _hideOnScroll.visible,
+                    showTeam: session?.canViewTeam ?? false,
                     onTabSelected: _goTab,
                     onFabPressed: () => context.go('/calls'),
                   ),

@@ -109,6 +109,10 @@ class AuthController extends StateNotifier<AuthState> {
           displayName: next.session.displayName,
           company: next.session.company,
           accountCode: next.session.accountCode,
+          role: switch (next.session.role) {
+            AuthRole.manager => UserRole.manager,
+            AuthRole.rep => UserRole.rep,
+          },
         ),
       );
     }

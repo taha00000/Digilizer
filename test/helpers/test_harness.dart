@@ -17,6 +17,16 @@ const demoSession = AppSession(
   displayName: 'Demo Support',
   company: 'HILAL',
   accountCode: '999903',
+  role: UserRole.manager,
+);
+
+/// A field rep — sees no team data.
+const repSession = AppSession(
+  userId: 'rep-1',
+  displayName: 'Demo Rep',
+  company: 'HILAL',
+  accountCode: '999904',
+  role: UserRole.rep,
 );
 
 /// Biometric stub for widget tests — the real plugin has no implementation in

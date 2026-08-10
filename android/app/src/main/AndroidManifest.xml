@@ -1,6 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Flutter's template only declares INTERNET in the debug and profile
+         manifests. Without it here a RELEASE build has no network at all, so
+         every real API call would fail once USE_MOCK is turned off. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- local_auth: the biometric prompt. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <!-- connectivity_plus reads the active network to drive offline state. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
-        android:label="eway"
+        android:label="eWay"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

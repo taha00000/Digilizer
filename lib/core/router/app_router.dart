@@ -25,11 +25,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/login',
     refreshListenable: refresh,
     redirect: (context, state) {
-      final signedIn = ref.read(sessionControllerProvider) != null;
+      final session = ref.read(sessionControllerProvider);
+      final signedIn = session != null;
       final atLogin = state.matchedLocation == '/login';
 
       if (!signedIn && !atLogin) return '/login';
       if (signedIn && atLogin) return '/dashboard';
+
+      // Hiding the Team tab is presentation. This is the actual gate: a rep
+      // must not reach team routes by deep link, back-stack or a stale
+      // location restored on launch.
+      if (signedIn &&
+          !session.canViewTeam &&
+          state.matchedLocation.startsWith('/team')) {
+        return '/dashboard';
+      }
       return null;
     },
     routes: [

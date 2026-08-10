@@ -14,6 +14,7 @@ class AuthSessionModel {
     required this.company,
     required this.accountCode,
     required this.token,
+    required this.role,
   });
 
   final String userId;
@@ -21,6 +22,7 @@ class AuthSessionModel {
   final String company;
   final String accountCode;
   final String token;
+  final AuthRole role;
 
   factory AuthSessionModel.fromJson(Map<String, dynamic> json) {
     return AuthSessionModel(
@@ -29,7 +31,19 @@ class AuthSessionModel {
       company: json['company']?.toString() ?? '',
       accountCode: json['accountCode']?.toString() ?? '',
       token: json['token']?.toString() ?? '',
+      role: parseRole(json['role']),
     );
+  }
+
+  /// Anything the server does not explicitly mark as a manager is treated as a
+  /// rep. Failing closed matters here: a parsing slip must not hand a field
+  /// rep their colleagues' numbers.
+  static AuthRole parseRole(dynamic raw) {
+    final v = raw?.toString().toLowerCase().trim();
+    return switch (v) {
+      'manager' || 'mgr' || 'zsm' || 'asm' || 'nsm' => AuthRole.manager,
+      _ => AuthRole.rep,
+    };
   }
 
   Map<String, dynamic> toJson() => {
@@ -38,6 +52,7 @@ class AuthSessionModel {
         'company': company,
         'accountCode': accountCode,
         'token': token,
+        'role': role.name,
       };
 
   AuthSession toEntity() => AuthSession(
@@ -46,5 +61,6 @@ class AuthSessionModel {
         company: company,
         accountCode: accountCode,
         token: token,
+        role: role,
       );
 }
