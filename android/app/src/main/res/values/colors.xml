@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Aurora's canvas token. The launch window uses this so the app opens
+         into its own dark canvas instead of flashing white before Flutter's
+         first frame. -->
+    <color name="eway_canvas">#0A1024</color>
+</resources>

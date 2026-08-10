@@ -9,6 +9,7 @@ import '../../../../shared/widgets/async_view.dart';
 import '../../../../shared/widgets/bottom_tab_bar.dart';
 import '../../../../shared/widgets/cta_button.dart';
 import '../../../../shared/widgets/list_row.dart';
+import '../../../../shared/widgets/option_sheet.dart';
 import '../../../../shared/widgets/pill_row.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../../../../shared/widgets/status_badge.dart';
@@ -25,12 +26,39 @@ class CallsScreen extends ConsumerWidget {
     final async = ref.watch(callsTodayProvider);
     final audience = ref.watch(callAudienceProvider);
 
-    void addVisit() {
+    // The prototype's openAddVisit(): pick a doctor, and the visit appears in
+    // today's list as an unplanned, logged call.
+    Future<void> addVisit() async {
+      const roster = [
+        ('Dr. Faisal Mahmood', 'Cardiologist · Ittefaq Hospital'),
+        ('Dr. Nadia Hassan', 'Dermatologist · Services Hospital'),
+        ('Dr. Usman Tariq', 'Physician · Mayo Hospital'),
+        ('Dr. Ayesha Malik', 'Paediatrician · Children\'s Hospital'),
+      ];
+
+      final picked = await OptionSheet.show(
+        context,
+        title: 'Log a visit',
+        subtitle: 'Choose a doctor to add to today.',
+        options: [
+          for (final (name, detail) in roster)
+            SheetOption(
+              id: name,
+              icon: Icons.badge_outlined,
+              title: name,
+              subtitle: detail,
+            ),
+        ],
+      );
+      if (picked == null || !context.mounted) return;
+
+      final specialty =
+          roster.firstWhere((r) => r.$1 == picked).$2.split(' · ').first;
+      logVisit(ref, doctorName: picked, specialty: specialty);
+
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(content: Text('Visit logging arrives with the API.')),
-        );
+        ..showSnackBar(SnackBar(content: Text('$picked added to today.')));
     }
 
     return AppShell(

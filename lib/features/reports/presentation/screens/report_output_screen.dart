@@ -8,6 +8,7 @@ import '../../../../shared/widgets/app_shell.dart';
 import '../../../../shared/widgets/bottom_tab_bar.dart';
 import '../../../../shared/widgets/cta_button.dart';
 import '../../../../shared/widgets/donut_gauge.dart';
+import '../../../../shared/widgets/option_sheet.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../../../../shared/widgets/status_badge.dart';
 import '../../domain/entities/report_output.dart';
@@ -105,6 +106,49 @@ class ReportOutputScreen extends ConsumerWidget {
   }
 }
 
+/// The prototype's doExport(): PDF / Excel / share link.
+///
+/// TODO(real-api): PDF and Excel need the server to render the file; the share
+/// link needs a signed URL. Until those exist this confirms the choice rather
+/// than pretending a file was produced.
+Future<void> _export(BuildContext context) async {
+  final choice = await OptionSheet.show(
+    context,
+    title: 'Export report',
+    subtitle: 'Choose a format.',
+    options: const [
+      SheetOption(
+        id: 'pdf',
+        icon: Icons.picture_as_pdf_outlined,
+        title: 'PDF document',
+        subtitle: '.pdf',
+      ),
+      SheetOption(
+        id: 'xls',
+        icon: Icons.table_chart_outlined,
+        title: 'Excel spreadsheet',
+        subtitle: '.xlsx',
+      ),
+      SheetOption(
+        id: 'link',
+        icon: Icons.link_rounded,
+        title: 'Share link',
+        subtitle: 'copy link',
+      ),
+    ],
+  );
+  if (choice == null || !context.mounted) return;
+
+  final message = switch (choice) {
+    'link' => 'Shareable links arrive with the real API.',
+    'xls' => 'Excel export arrives with the real API.',
+    _ => 'PDF export arrives with the real API.',
+  };
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(message)));
+}
+
 class _Output extends StatelessWidget {
   const _Output({required this.report});
   final ReportOutput report;
@@ -124,15 +168,7 @@ class _Output extends StatelessWidget {
           'Visit summary',
           trailing: SectionLink(
             'Export',
-            onTap: () {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  const SnackBar(
-                    content: Text('Export arrives with the real API.'),
-                  ),
-                );
-            },
+            onTap: () => _export(context),
           ),
         ),
         _VisitTable(visits: report.visits),
